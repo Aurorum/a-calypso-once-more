@@ -41,6 +41,7 @@
 .jetpack-field-label {
 	display: flex;
 	flex-direction: row;
+	height: 32px;
 
 	.components-base-control {
 		margin-bottom: -3px;
@@ -66,8 +67,9 @@
 	font-weight: 600;
 	margin: 0;
 	margin-bottom: 2px;
-
-	&:focus {
+	margin-left: -7px;
+	
+&:focus {
 		border-color: #FFF;
 		box-shadow: none;
 	}
