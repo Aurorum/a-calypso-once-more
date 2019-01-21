@@ -176,7 +176,8 @@ class AccountDialog extends Component {
 			// If a single account is available, show a simple confirmation
 			// prompt to ask the user to confirm their connection.
 			return this.props.translate(
-				'Confirm this is the account you would like to authorize. Note that your posts will be automatically shared to this account.',
+				"Is this the account you'd like to connect? All your new blog posts will be automatically shared to this account. " +
+				"You'll be able to change this option in the editor sidebar when you're writing a post.",
 				{
 					context: 'Sharing: Publicize connection confirmation',
 				}
