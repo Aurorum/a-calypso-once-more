@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -27,6 +25,11 @@ import { decodeEntities } from 'lib/formatting';
 import analytics from 'lib/analytics';
 import QueryPosts from 'components/data/query-posts';
 import SiteIcon from 'blocks/site-icon';
+
+/**
+* Style dependencies 
+*/
+import './style.scss';
 
 class ResumeEditing extends React.Component {
 	static propTypes = {
