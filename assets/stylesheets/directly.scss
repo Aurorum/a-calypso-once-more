@@ -71,7 +71,7 @@ textarea {
 	appearance: none;
 	width: auto;
 	&:hover {
-		border-color: $blue-dark;
+		border-color: var( --color-primary-700 );
 	}
 	&:active,
 	&:active:enabled {
@@ -81,7 +81,7 @@ textarea {
 		color: $white;
 	}
 	&:focus {
-		border-color: $blue-dark;
+		border-color: var( --color-primary-700 );
 		box-shadow: 0 0 0 2px $blue-light;
 	}
 }
