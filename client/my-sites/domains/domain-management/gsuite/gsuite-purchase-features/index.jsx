@@ -84,7 +84,7 @@ class GSuitePurchaseFeatures extends React.Component {
 					{ this.renderFeature(
 						translate( 'Connect with your team' ),
 						translate(
-							'Use text chats, voice calls, or video calls, with built in screen sharing'
+							'Use text chats, voice calls, or video calls, with built in screen sharing.'
 						),
 						'/calypso/images/g-suite/logo_hangouts_48dp.svg',
 						'Google Hangouts Logo'
