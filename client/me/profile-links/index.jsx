@@ -189,7 +189,7 @@ class ProfileLinks extends React.Component {
 					</SectionHeader>		
 					<Card>{ !! this.state.showingForm ? this.renderForm() : this.renderProfileLinks() }</Card>					
 				</div>	
-				<ListEnd />;				
+				<ListEnd />				
 			</Fragment>
 		);
 	}
