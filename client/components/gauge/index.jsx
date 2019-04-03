@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -15,6 +13,11 @@ import './style.scss';
 export default class extends React.PureComponent {
 	static displayName = 'Gauge';
 
+	const gaugeSuccess =
+		getComputedStyle( document.body )
+			.getPropertyValue( '--color-success' )
+			.trim() || '#008a00';
+
 	static propTypes = {
 		percentage: PropTypes.number.isRequired,
 		width: PropTypes.number,
@@ -29,7 +32,7 @@ export default class extends React.PureComponent {
 		height: 118,
 		lineWidth: 9,
 		labelSize: 32,
-		colors: [ '#e9eff3', '#00aadc' ],
+		colors: [ '#e9eff3', gaugeSuccess ],
 	};
 
 	componentDidUpdate() {
