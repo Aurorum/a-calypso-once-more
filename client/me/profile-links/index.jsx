@@ -3,7 +3,7 @@
 /**
  * External dependencies
  */
-import React from 'react';
+import React, { Fragment } from 'react';
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
 import { times } from 'lodash';
@@ -22,6 +22,7 @@ import ProfileLinksAddOther from 'me/profile-links-add-other';
 import { deleteUserProfileLink, resetUserProfileLinkErrors } from 'state/profile-links/actions';
 import getProfileLinks from 'state/selectors/get-profile-links';
 import getProfileLinksErrorType from 'state/selectors/get-profile-links-error-type';
+import ListEnd from 'components/list-end';
 
 /**
  * Style dependencies
@@ -173,20 +174,23 @@ class ProfileLinks extends React.Component {
 
 	render() {
 		return (
-			<div>
-				<QueryProfileLinks />
-				<SectionHeader label={ this.props.translate( 'Profile Links' ) }>
-					<AddProfileLinksButtons
-						showingForm={ this.state.showingForm }
-						onShowAddOther={ this.showAddOther }
-						showPopoverMenu={ this.state.showPopoverMenu }
-						onShowAddWordPress={ this.showAddWordPress }
-						onShowPopoverMenu={ this.showPopoverMenu }
-						onClosePopoverMenu={ this.closePopoverMenu }
-					/>
-				</SectionHeader>
-				<Card>{ this.state.showingForm ? this.renderForm() : this.renderProfileLinks() }</Card>
-			</div>
+			<Fragment>
+				<div>
+					<QueryProfileLinks />
+					<SectionHeader label={ this.props.translate( 'Profile Links' ) }>
+						<AddProfileLinksButtons
+							showingForm={ !! this.state.showingForm }
+							onShowAddOther={ this.showAddOther }
+							showPopoverMenu={ this.state.showPopoverMenu }
+							onShowAddWordPress={ this.showAddWordPress }
+							onShowPopoverMenu={ this.showPopoverMenu }
+							onClosePopoverMenu={ this.closePopoverMenu }
+						/>
+					</SectionHeader>		
+					<Card>{ !! this.state.showingForm ? this.renderForm() : this.renderProfileLinks() }</Card>					
+				</div>	
+				<ListEnd />;				
+			</Fragment>
 		);
 	}
 }
