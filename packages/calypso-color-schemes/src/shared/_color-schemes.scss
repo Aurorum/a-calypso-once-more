@@ -220,9 +220,9 @@
 
 	--color-wpcom: #{$muriel-blue-500};
 	--color-jetpack: #{$green-jetpack};
-	--color-jetpack-light: #81d677;
-	--color-jetpack-dark: #2e8928;
-	--color-jetpack-400: #57ca53;
+	--color-jetpack-light: #{$muriel-jetpack-green-300};
+	--color-jetpack-dark: #{$muriel-jetpack-green-700};
+	--color-jetpack-400: #{$muriel-jetpack-green-400};
 	--color-jetpack-onboarding-text: #{$muriel-white};
 	--color-jetpack-onboarding-background: #1d232f;
 
