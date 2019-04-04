@@ -64,6 +64,13 @@ Consistent coding style makes the code so much easier to read. Here are ours:
 * [I18n Guidelines](https://github.com/Automattic/i18n-calypso/blob/master/README.md)
 * [A11y Checklist](../docs/accessibility-checklist.md)
 
+6. Mention that the PR is ready for review or if you have write access remove the **<span class="label status-in-progress">[Status] In Progress</span>** label from the pull request and add the **<span class="label status-needs-review">[Status] Needs Review</span>** label - someone will provide feedback on the latest unreviewed changes. The reviewer will also mark the pull request as **<span class="label status-needs-author-reply">[Status] Needs Author Reply</span>** if they think you need to change anything.
+7. If you get a 👍, 💥, 🚢, :shipit:, or a LGTM and the status has been changed to **<span class="label status-ready-to-merge">[Status] Ready to Merge</span>** – this is great – the pull request is ready to be merged into `master`.
+
+6. Mention that the PR is ready for review or if you have write access remove the **<span class="label status-in-progress">[Status] In Progress</span>** label from the pull request and add the **<span class="label status-needs-review">[Status] Needs Review</span>** label - someone will provide feedback on the latest unreviewed changes. The reviewer will also mark the pull request as **<span class="label status-needs-author-reply">[Status] Needs Author Reply</span>** if they think you need to change anything.
+7. If you get a :thumbsup:, :explosion:, :boom:, :shipit:, or a LGTM and the status has been changed to **<span class="label status-ready-to-merge">[Status] Ready to Merge</span>** – this is great – the pull request is ready to be merged into `master`.
+
+ If you get a 👍, 💥, 🚢 <img src="https://github.githubassets.com/images/icons/emoji/shipit.png" class="emoji" />, or a LGTM and the status has been changed to **<span class="label status-ready-to-merge">[Status] Ready to Merge</span>** – this is great – the pull request is ready to be merged into `master`.
 
 ### Lifecycle of a Pull Request
 
