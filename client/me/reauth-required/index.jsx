@@ -146,14 +146,45 @@ const ReauthRequired = createReactClass( {
 			<FormButton
 				disabled={ ! smsRequestsAllowed }
 				isPrimary={ false }
-				onClick={ this.getClickHandler( clickAction, this.sendSMSCode ) }
+				onClick={ this.getClickHandler( clickAction, this.sendSMSCode, this.renderVerifyViaSMSButton ) }
 				type="button"
+				className="reauth-required__send-sms-button"
 			>
 				{ buttonLabel }
 			</FormButton>
 		);
 	},
-
+	
+	renderVerifyViaSMSButton: function() {
+		if ( ! this.props.twoStepAuthorization.isTwoStepSMSEnabled() ) {
+			return null;					
+		}
+		
+		return (
+			<FormButton
+					disabled={ this.state.validatingCode || ! this.preValidateAuthCode() }
+					onClick={ this.getClickHandler( 'Submit Validation Code on Reauth Required' ) }
+				>
+					{ this.props.translate( 'Verify' ) }
+				</FormButton>
+		);
+	},
+	
+	renderVerifyButton: function() {		
+		if ( this.props.twoStepAuthorization.isTwoStepSMSEnabled() ) {
+			return null;					
+		}
+					
+		return (
+				<FormButton
+					disabled={ this.state.validatingCode || ! this.preValidateAuthCode() }
+					onClick={ this.getClickHandler( 'Submit Validation Code on Reauth Required' ) }
+				>
+					{ this.props.translate( 'Verify' ) }
+				</FormButton>
+			);
+	},
+		
 	renderFailedValidationMsg: function() {
 		if ( ! this.props.twoStepAuthorization.codeValidationFailed() ) {
 			return null;
@@ -196,8 +227,10 @@ const ReauthRequired = createReactClass( {
 				buttons={ null }
 				onClose={ null }
 			>
-				<p>{ this.getCodeMessage() }</p>
-
+				<p>{ this.getCodeMessage() }</p>	
+				
+					{ this.renderSendSMSButton() }
+				
 				<p>
 					<a
 						className="reauth-required__sign-out"
@@ -238,16 +271,11 @@ const ReauthRequired = createReactClass( {
 					</FormFieldset>
 
 					{ this.renderSMSResendThrottled() }
-
-					<FormButtonsBar>
-						<FormButton
-							disabled={ this.state.validatingCode || ! this.preValidateAuthCode() }
-							onClick={ this.getClickHandler( 'Submit Validation Code on Reauth Required' ) }
-						>
-							{ this.props.translate( 'Verify' ) }
-						</FormButton>
-
-						{ this.renderSendSMSButton() }
+					
+					{ this.renderVerifyViaSMSButton() }
+					
+					{ this.renderVerifyButton() }
+					
 					</FormButtonsBar>
 				</form>
 			</Dialog>
