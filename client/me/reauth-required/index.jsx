@@ -118,7 +118,22 @@ const ReauthRequired = createReactClass( {
 		this.setState( { smsRequestsAllowed: true } );
 	},
 
-	sendSMSCode: function() {
+		sendSMSCode: function() {
+		
+			renderVerifyViaSMSButton: function renderVerifyViaSMSButton() {
+				if ( this.props.twoStepAuthorization.isTwoStepSMSEnabled() ) {
+					return (
+						<FormButton
+								disabled={ this.state.validatingCode || ! this.preValidateAuthCode() }
+								onClick={ this.getClickHandler( 'Submit Validation Code on Reauth Required' ) }
+							>
+								{ this.props.translate( 'Verify test 5' ) }
+						</FormButton>
+					);				
+			}		
+					return null;
+			},
+		
 		this.setState( { smsRequestsAllowed: false, smsCodeSent: true } );
 		this.codeRequestTimer = setTimeout( this.allowSMSRequests, 60000 );
 
@@ -143,93 +158,16 @@ const ReauthRequired = createReactClass( {
 			: [ 'Resend SMS Code Button on Reauth Required', this.props.translate( 'Resend SMS Code' ) ];
 
 		return (
-			<div>
 			<FormButton
 				disabled={ ! smsRequestsAllowed }
 				isPrimary={ false }
-				onClick={ this.getClickHandler( clickAction, this.sendSMSCode, this.renderVerifyViaSMSButton, this.renderVerifyViaSMSButton3, this.showVerifcation, this.state.showVerification, this.renderVerifyViaSMSButton4 ) }
+				onClick={ this.getClickHandler( clickAction, this.sendSMSCode ) }
 				type="button"
 				className="reauth-required__send-sms-button"
 			>
 				{ buttonLabel }
-			</FormButton>
-			
-			<FormButton
-				disabled={ ! smsRequestsAllowed }
-				isPrimary={ false }
-				onClick={ this.getClickHandler( clickAction, this.sendSMSCode, this.renderVerifyViaSMSButton, this.renderVerifyViaSMSButton3, this.showVerifcation, this.renderVerifyViaSMSButton4 ) }
-				type="button"
-				className="reauth-required__send-sms-button"
-			>
-				{ buttonLabel }
-			</FormButton>
-				</div>
+			</FormButton>		
 		);
-	},
-	
-	renderVerifyViaSMSButton: function() {
-		if ( this.props.twoStepAuthorization.isTwoStepSMSEnabled() ) {
-			return (
-				<FormButton
-						disabled={ this.state.validatingCode || ! this.preValidateAuthCode() }
-						onClick={ this.getClickHandler( 'Submit Validation Code on Reauth Required' ) }
-					>
-						{ this.props.translate( 'Verify test 1' ) }
-					</FormButton>
-				);				
-		}
-		
-		return null;
-	},
-	
-		renderVerifyViaSMSButton3: function() {
-		if ( this.props.twoStepAuthorization.isTwoStepSMSEnabled() ) {
-			return (
-				<FormButton
-						disabled={ this.state.validatingCode || ! this.preValidateAuthCode() }
-						onClick={ this.getClickHandler( 'Submit Validation Code on Reauth Required' ) }
-					>
-						{ this.props.translate( 'Verify test 3' ) }
-					</FormButton>
-				);				
-		}
-		
-		return null;
-	},
-	
-	
-			renderVerifyViaSMSButton4: function() {
-		if ( this.props.twoStepAuthorization.isTwoStepSMSEnabled() ) {
-			return (
-				<FormButton
-						disabled={ this.state.validatingCode || ! this.preValidateAuthCode() }
-						onClick={ this.getClickHandler( 'Submit Validation Code on Reauth Required' ) }
-						isVisible={ this.state.showVerification}
-					>
-						{ this.props.translate( 'Verify test 4' ) }
-					</FormButton>
-				);				
-		}
-		
-		return null;
-	},
-	
-	
-	
-	
-	renderVerifyButton: function() {		
-		if ( this.props.twoStepAuthorization.isTwoStepSMSEnabled() ) {
-			return null;					
-		}
-					
-		return (
-				<FormButton
-					disabled={ this.state.validatingCode || ! this.preValidateAuthCode() }
-					onClick={ this.getClickHandler( 'Submit Validation Code on Reauth Required' ) }
-				>
-					{ this.props.translate( 'Verify test 2' ) }
-				</FormButton>
-			);
 	},
 		
 	renderFailedValidationMsg: function() {
@@ -318,6 +256,8 @@ const ReauthRequired = createReactClass( {
 					</FormFieldset>
 
 					{ this.renderSMSResendThrottled() }
+					
+					{ this.sendSMSCode() }
 					
 					{ this.renderVerifyViaSMSButton() }
 	
