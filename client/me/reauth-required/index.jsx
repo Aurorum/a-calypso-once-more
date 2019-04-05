@@ -123,9 +123,7 @@ const ReauthRequired = createReactClass( {
 		this.setState( { smsRequestsAllowed: false, smsCodeSent: true } );
 		this.codeRequestTimer = setTimeout( this.allowSMSRequests, 60000 );
 		
-		const additionalClasses = {
-			'is-visible'
-		}
+		const additionalClasses = 'is-visible';
 
 		this.props.twoStepAuthorization.sendSMSCode( function( error, data ) {
 			if ( ! error && data.sent ) {
@@ -192,9 +190,9 @@ const ReauthRequired = createReactClass( {
 	
 	function verificationClasses() {
 		if ( this.props.twoStepAuthorization.isTwoStepSMSEnabled() ) {
-			const verificationClasses = { 'sms' };
+			const verificationClasses = 'sms';
 		}								
-		const verificationClasses = { 'app' }						
+		const verificationClasses = 'app';					
 	}
 
 	render: function() {
