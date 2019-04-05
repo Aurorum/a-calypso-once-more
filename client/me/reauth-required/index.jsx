@@ -195,7 +195,7 @@ const ReauthRequired = createReactClass( {
 			} );
 		
 		const showVerification = classNames( {
-					'is-visible': this.props.twoStepAuthorization.sendSMSCode(),
+					'is-visible': smsCodeSent;
 			} );
 
 		return (
