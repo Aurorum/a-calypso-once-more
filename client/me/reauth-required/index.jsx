@@ -156,16 +156,18 @@ const ReauthRequired = createReactClass( {
 	},
 	
 	renderVerifyViaSMSButton: function() {
-		if ( ! this.props.twoStepAuthorization.isTwoStepSMSEnabled() ) {
+		if ( this.props.twoStepAuthorization.isTwoStepSMSEnabled() ) {
 			return (
-			<FormButton
-					disabled={ this.state.validatingCode || ! this.preValidateAuthCode() }
-					onClick={ this.getClickHandler( 'Submit Validation Code on Reauth Required' ) }
-				>
-					{ this.props.translate( 'Verify test 1' ) }
-				</FormButton>
-			);				
+				<FormButton
+						disabled={ this.state.validatingCode || ! this.preValidateAuthCode() }
+						onClick={ this.getClickHandler( 'Submit Validation Code on Reauth Required' ) }
+					>
+						{ this.props.translate( 'Verify test 1' ) }
+					</FormButton>
+				);				
 		}
+		
+		return null;
 	},
 	
 	renderVerifyButton: function() {		
