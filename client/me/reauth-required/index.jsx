@@ -148,7 +148,7 @@ const ReauthRequired = createReactClass( {
 			<FormButton
 				disabled={ ! smsRequestsAllowed }
 				isPrimary={ false }
-				onClick={ this.getClickHandler( clickAction, this.sendSMSCode, this.showVerifyButton ) }
+				onClick={ this.getClickHandler( clickAction, this.sendSMSCode ) }
 				type="button"
 				className="reauth-required__send-sms-code"
 			>
@@ -191,11 +191,11 @@ const ReauthRequired = createReactClass( {
 		const method = this.props.twoStepAuthorization.isTwoStepSMSEnabled() ? 'sms' : 'app';
 		
 		const verificationClasses = classNames( {
-					'sms': this.props.twoStepAuthorization.isTwoStepSMSEnabled(),
-			} );	
+					'reauth-required__sms-only': this.props.twoStepAuthorization.isTwoStepSMSEnabled(),
+			} );
 		
 		const showVerification = classNames( {
-					'is-visible': this.props.sendSMSCode(),
+					'is-visible': this.props.getClickHandlerclickAction(),
 			} );
 
 		return (
