@@ -156,7 +156,7 @@ const ReauthRequired = createReactClass( {
 			<FormButton
 				disabled={ ! smsRequestsAllowed }
 				isPrimary={ false }
-				onClick={ this.getClickHandler( clickAction, this.sendSMSCode, this.renderVerifyViaSMSButton ) }
+				onClick={ this.getClickHandler( clickAction, this.sendSMSCode ) }
 				type="button"
 				className="reauth-required__send-sms-button"
 			>
@@ -265,7 +265,7 @@ const ReauthRequired = createReactClass( {
 
 					{ this.renderSMSResendThrottled() }
 					
-					{ this.renderVerifyViaSMSButton() }
+					{ this.sendSMSCode() }
 					
 					{ this.displayVerification() }
 	
