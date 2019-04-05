@@ -132,6 +132,11 @@ const ReauthRequired = createReactClass( {
 			}
 		} );
 	},
+	
+	showVerifyButton: function() {
+		let verifyButton = document.getElementById('verify2fa');
+   		verifyButton.classList.add('is-visible');
+	},
 
 	preValidateAuthCode: function() {
 		return this.state.code.length && this.state.code.length > 5;
@@ -148,7 +153,7 @@ const ReauthRequired = createReactClass( {
 			<FormButton
 				disabled={ ! smsRequestsAllowed }
 				isPrimary={ false }
-				onClick={ this.getClickHandler( clickAction, this.sendSMSCode ) }
+				onClick={ this.getClickHandler( clickAction, this.sendSMSCode, this.showVerifyButton ) }
 				type="button"
 				className="reauth-required__send-sms-code"
 			>
@@ -252,6 +257,7 @@ const ReauthRequired = createReactClass( {
 							disabled={ this.state.validatingCode || ! this.preValidateAuthCode() }
 							onClick={ this.getClickHandler( 'Submit Validation Code on Reauth Required' ) }
 							id="verify2fa"
+							className="reauth-required__verify-button"
 						>
 							{ this.props.translate( 'Verify' ) }
 						</FormButton>
