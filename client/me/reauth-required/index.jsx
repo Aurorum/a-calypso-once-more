@@ -75,7 +75,7 @@ const ReauthRequired = createReactClass( {
 			return this.props.translate(
 				'Press the button below to request an SMS verification code. ' +
 					'Once you receive our text message at your phone number ending with ' +
-					'{{strong}}%(smsLastFour)s{{/strong}} , enter the code below.',
+					'{{strong}}%(smsLastFour)s{{/strong}}, enter the code below.',
 				{
 					args: {
 						smsLastFour: this.props.twoStepAuthorization.getSMSLastFour(),
@@ -157,17 +157,15 @@ const ReauthRequired = createReactClass( {
 	
 	renderVerifyViaSMSButton: function() {
 		if ( ! this.props.twoStepAuthorization.isTwoStepSMSEnabled() ) {
-			return null;					
-		}
-		
-		return (
+			return (
 			<FormButton
 					disabled={ this.state.validatingCode || ! this.preValidateAuthCode() }
 					onClick={ this.getClickHandler( 'Submit Validation Code on Reauth Required' ) }
 				>
-					{ this.props.translate( 'Verify' ) }
+					{ this.props.translate( 'Verify test 1' ) }
 				</FormButton>
-		);
+			);				
+		}
 	},
 	
 	renderVerifyButton: function() {		
@@ -180,7 +178,7 @@ const ReauthRequired = createReactClass( {
 					disabled={ this.state.validatingCode || ! this.preValidateAuthCode() }
 					onClick={ this.getClickHandler( 'Submit Validation Code on Reauth Required' ) }
 				>
-					{ this.props.translate( 'Verify' ) }
+					{ this.props.translate( 'Verify test 2' ) }
 				</FormButton>
 			);
 	},
