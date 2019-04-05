@@ -195,7 +195,7 @@ const ReauthRequired = createReactClass( {
 			} );
 		
 		const showVerification = classNames( {
-					'is-visible': smsCodeSent;
+					'is-visible': smsCodeSent,
 			} );
 
 		return (
