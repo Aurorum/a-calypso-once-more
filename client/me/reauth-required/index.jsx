@@ -177,6 +177,7 @@ const ReauthRequired = createReactClass( {
 				);
 			return null;
 		}
+	},
 		
 	renderFailedValidationMsg: function() {
 		if ( ! this.props.twoStepAuthorization.codeValidationFailed() ) {
