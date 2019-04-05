@@ -274,9 +274,7 @@ const ReauthRequired = createReactClass( {
 					
 					{ this.renderVerifyViaSMSButton() }
 					
-					{ this.renderVerifyButton() }
-					
-					</FormButtonsBar>
+					{ this.renderVerifyButton() }					
 				</form>
 			</Dialog>
 		);
