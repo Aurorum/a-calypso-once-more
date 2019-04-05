@@ -36,18 +36,6 @@ import './style.scss';
 // autofocus is used for tracking purposes, not an a11y issue
 /* eslint-disable jsx-a11y/no-autofocus */
 
-function verificationClasses() {
-		if ( this.props.twoStepAuthorization.isTwoStepSMSEnabled() ) {
-				const verificationClasses = classNames( {
-					'sms': true,
-			} );	
-		}	
-	
-		const verificationClasses = classNames( {
-				'app': true,
-			} );				
-	}
-
 const ReauthRequired = createReactClass( {
 	displayName: 'ReauthRequired',
 	mixins: [ observe( 'twoStepAuthorization' ) ],
@@ -135,10 +123,6 @@ const ReauthRequired = createReactClass( {
 	sendSMSCode: function() {
 		this.setState( { smsRequestsAllowed: false, smsCodeSent: true } );
 		this.codeRequestTimer = setTimeout( this.allowSMSRequests, 60000 );
-		
-		const additionalClasses = classNames( {
-				'is-visible': true,
-			} );	
 
 		this.props.twoStepAuthorization.sendSMSCode( function( error, data ) {
 			if ( ! error && data.sent ) {
@@ -205,6 +189,10 @@ const ReauthRequired = createReactClass( {
 
 	render: function() {
 		const method = this.props.twoStepAuthorization.isTwoStepSMSEnabled() ? 'sms' : 'app';
+		
+		const verificationClasses = classNames( {
+					'sms': this.props.twoStepAuthorization.isTwoStepSMSEnabled(),
+			} );	
 
 		return (
 			<Dialog
@@ -263,7 +251,7 @@ const ReauthRequired = createReactClass( {
 						<FormButton
 							disabled={ this.state.validatingCode || ! this.preValidateAuthCode() }
 							onClick={ this.getClickHandler( 'Submit Validation Code on Reauth Required' ) }
-							className={ classNames( 'reauth-required__verification-button', additionalClasses, this.props.className ) }
+							id="verify2fa"
 						>
 							{ this.props.translate( 'Verify' ) }
 						</FormButton>
