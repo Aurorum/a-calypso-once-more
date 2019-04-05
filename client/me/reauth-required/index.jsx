@@ -35,6 +35,14 @@ import './style.scss';
 
 // autofocus is used for tracking purposes, not an a11y issue
 /* eslint-disable jsx-a11y/no-autofocus */
+
+function verificationClasses() {
+		if ( this.props.twoStepAuthorization.isTwoStepSMSEnabled() ) {
+			const verificationClasses = 'sms';
+		}								
+		const verificationClasses = 'app';					
+	}
+
 const ReauthRequired = createReactClass( {
 	displayName: 'ReauthRequired',
 	mixins: [ observe( 'twoStepAuthorization' ) ],
@@ -187,13 +195,6 @@ const ReauthRequired = createReactClass( {
 			</div>
 		);
 	},
-	
-	function verificationClasses() {
-		if ( this.props.twoStepAuthorization.isTwoStepSMSEnabled() ) {
-			const verificationClasses = 'sms';
-		}								
-		const verificationClasses = 'app';					
-	}
 
 	render: function() {
 		const method = this.props.twoStepAuthorization.isTwoStepSMSEnabled() ? 'sms' : 'app';
