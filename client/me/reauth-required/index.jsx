@@ -38,9 +38,14 @@ import './style.scss';
 
 function verificationClasses() {
 		if ( this.props.twoStepAuthorization.isTwoStepSMSEnabled() ) {
-			const verificationClasses = 'sms';
-		}								
-		const verificationClasses = 'app';					
+				const verificationClasses = classNames( {
+					'sms': true,
+			} );	
+		}	
+	
+		const verificationClasses = classNames( {
+				'app': true,
+			} );				
 	}
 
 const ReauthRequired = createReactClass( {
@@ -131,7 +136,9 @@ const ReauthRequired = createReactClass( {
 		this.setState( { smsRequestsAllowed: false, smsCodeSent: true } );
 		this.codeRequestTimer = setTimeout( this.allowSMSRequests, 60000 );
 		
-		const additionalClasses = 'is-visible';
+		const additionalClasses = classNames( {
+				'is-visible': true,
+			} );	
 
 		this.props.twoStepAuthorization.sendSMSCode( function( error, data ) {
 			if ( ! error && data.sent ) {
