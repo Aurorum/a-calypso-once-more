@@ -202,7 +202,7 @@ const ReauthRequired = createReactClass( {
 		return (
 			<Dialog
 				autoFocus={ false }
-				className={ classNames( 'reauth-required__dialog', additionalClasses, this.props.className ) }
+				className={ classNames( 'reauth-required__dialog', verificationClasses, this.props.className ) }
 				isFullScreen={ false }
 				isVisible={ this.props.twoStepAuthorization.isReauthRequired() }
 				buttons={ null }
