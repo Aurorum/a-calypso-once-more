@@ -140,6 +140,7 @@ const ReauthRequired = createReactClass( {
 							disabled={ this.state.validatingCode || ! this.preValidateAuthCode() }
 							onClick={ this.getClickHandler( 'Submit Validation Code on Reauth Required' ) }
 							className="reauth-required__verify-button"
+							isVisible={ this.props.twoStepAuthorization.sendSMSCode() }
 						>
 							{ this.props.translate( 'Verify' ) }
 						</FormButton>
