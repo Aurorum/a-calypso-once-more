@@ -73,7 +73,7 @@ const ReauthRequired = createReactClass( {
 	},
 	
 		renderVerifyButton: function() {
-		if ( this.state.smsCodeSent ) {
+		if ( this.state.smsCodeSent || ! this.props.twoStepAuthorization.isTwoStepSMSEnabled() ) {
 			return (
 						<FormButton
 							disabled={ this.state.validatingCode || ! this.preValidateAuthCode() }
