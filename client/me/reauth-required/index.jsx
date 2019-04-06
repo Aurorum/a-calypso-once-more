@@ -71,6 +71,21 @@ const ReauthRequired = createReactClass( {
 	getFocusHandler( action ) {
 		return () => this.props.recordGoogleEvent( 'Me', 'Focused on ' + action );
 	},
+	
+		renderVerifyButton: function() {
+		if ( ! this.props.twoStepAuthorization.isTwoStepSMSEnabled() ) {
+			return (
+						<FormButton
+							disabled={ this.state.validatingCode || ! this.preValidateAuthCode() }
+							onClick={ this.getClickHandler( 'Submit Validation Code on Reauth Required' ) }
+							id="verify2fa"
+							className={ classNames( 'reauth-required__verify-button', showVerification, this.props.className ) }
+						>
+							{ this.props.translate( 'Verify' ) }
+						</FormButton>
+				);
+		}
+		},
 
 	getCodeMessage: function() {
 		if ( this.props.twoStepAuthorization.isTwoStepSMSEnabled() ) {
@@ -137,6 +152,7 @@ const ReauthRequired = createReactClass( {
 		return this.state.code.length && this.state.code.length > 5;
 	},
 
+
 	renderSendSMSButton: function() {
 		const { smsRequestsAllowed, smsCodeSent } = this.state;
 
@@ -186,7 +202,7 @@ const ReauthRequired = createReactClass( {
 			</div>
 		);
 	},
-
+	
 	render: function() {
 		const method = this.props.twoStepAuthorization.isTwoStepSMSEnabled() ? 'sms' : 'app';
 		
@@ -252,14 +268,8 @@ const ReauthRequired = createReactClass( {
 
 					{ this.renderSMSResendThrottled() }
 					
-						<FormButton
-							disabled={ this.state.validatingCode || ! this.preValidateAuthCode() }
-							onClick={ this.getClickHandler( 'Submit Validation Code on Reauth Required' ) }
-							id="verify2fa"
-							className={ classNames( 'reauth-required__verify-button', showVerification, this.props.className ) }
-						>
-							{ this.props.translate( 'Verify' ) }
-						</FormButton>
+					{ this.renderVerifyButton() }
+					
 				</form>
 			</Dialog>
 		);
