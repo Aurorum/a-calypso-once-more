@@ -79,7 +79,7 @@ const ReauthRequired = createReactClass( {
 							disabled={ this.state.validatingCode || ! this.preValidateAuthCode() }
 							onClick={ this.getClickHandler( 'Submit Validation Code on Reauth Required' ) }
 							id="verify2fa"
-							className={ classNames( 'reauth-required__verify-button', showVerification, this.props.className ) }
+							className={ classNames( 'reauth-required__verify-button', this.props.className ) }
 						>
 							{ this.props.translate( 'Verify' ) }
 						</FormButton>
