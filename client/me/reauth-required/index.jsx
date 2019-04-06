@@ -135,6 +135,7 @@ const ReauthRequired = createReactClass( {
 	},
 	
 	renderVerification: function() {
+		const { smsRequestsAllowed, smsCodeSent } = this.state;
 		return (
 					<FormButton
 							disabled={ this.state.validatingCode || ! this.preValidateAuthCode() }
