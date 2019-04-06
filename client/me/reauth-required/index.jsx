@@ -127,6 +127,11 @@ const ReauthRequired = createReactClass( {
 		this.props.twoStepAuthorization.sendSMSCode( function( error, data ) {
 			if ( ! error && data.sent ) {
 				debug( 'SMS code successfully sent' );
+				
+				const showVerification = classNames( {
+						'is-visible': true,
+				} );
+
 			} else {
 				debug( 'There was a failure sending the SMS code.' );
 			}
@@ -194,10 +199,6 @@ const ReauthRequired = createReactClass( {
 					'reauth-required__sms-only': this.props.twoStepAuthorization.isTwoStepSMSEnabled(),
 			} );
 		
-		const showVerification = classNames( {
-					'is-visible': smsCodeSent,
-			} );
-
 		return (
 			<Dialog
 				autoFocus={ false }
