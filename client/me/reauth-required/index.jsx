@@ -153,7 +153,7 @@ const ReauthRequired = createReactClass( {
 	},
 
 
-	renderSendSMSButton: function() {
+	renderTopSendSMSButton: function() {
 		const { smsRequestsAllowed, smsCodeSent } = this.state;
 
 		const [ clickAction, buttonLabel ] = ! smsCodeSent
@@ -173,6 +173,28 @@ const ReauthRequired = createReactClass( {
 		);
 	},
 
+	renderBottomSendSMSButton: function() {
+		if ( ! this.props.twoStepAuthorization.isTwoStepSMSEnabled() ) {
+			const { smsRequestsAllowed, smsCodeSent } = this.state;
+
+			const [ clickAction, buttonLabel ] = ! smsCodeSent
+				? [ 'Send SMS Code Button on Reauth Required', this.props.translate( 'Send SMS Code' ) ]
+				: [ 'Resend SMS Code Button on Reauth Required', this.props.translate( 'Resend SMS Code' ) ];
+	
+			return (
+				<FormButton
+					disabled={ ! smsRequestsAllowed }
+					isPrimary={ false }
+					onClick={ this.getClickHandler( clickAction, this.sendSMSCode ) }
+					type="button"
+					className="reauth-required__send-sms-code"
+				>
+					{ buttonLabel }
+				</FormButton>
+			);
+		}
+	},
+	
 	renderFailedValidationMsg: function() {
 		if ( ! this.props.twoStepAuthorization.codeValidationFailed() ) {
 			return null;
@@ -221,7 +243,7 @@ const ReauthRequired = createReactClass( {
 			>
 				<p>{ this.getCodeMessage() }</p>
 				
-				{ this.renderSendSMSButton() }
+				{ this.renderTopSendSMSButton() }
 
 				<p>
 					<a
@@ -263,6 +285,8 @@ const ReauthRequired = createReactClass( {
 					</FormFieldset>
 
 					{ this.renderSMSResendThrottled() }
+					
+					{ this.renderBottomSendSMSButton() }
 					
 					{ this.renderVerifyButton() }
 					
