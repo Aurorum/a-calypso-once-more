@@ -127,10 +127,6 @@ const ReauthRequired = createReactClass( {
 		this.props.twoStepAuthorization.sendSMSCode( function( error, data ) {
 			if ( ! error && data.sent ) {
 				debug( 'SMS code successfully sent' );
-				
-				const showVerification = classNames( {
-						'is-visible': true,
-				} );
 
 			} else {
 				debug( 'There was a failure sending the SMS code.' );
@@ -148,7 +144,7 @@ const ReauthRequired = createReactClass( {
 		const [ clickAction, buttonLabel ] = ! smsCodeSent
 			? [ 'Send SMS Code Button on Reauth Required', this.props.translate( 'Send SMS Code' ) ]
 			: [ 'Resend SMS Code Button on Reauth Required', this.props.translate( 'Resend SMS Code' ) ];
-
+	
 		return (
 			<FormButton
 				disabled={ ! smsRequestsAllowed }
@@ -198,6 +194,11 @@ const ReauthRequired = createReactClass( {
 		const verificationClasses = classNames( {
 					'reauth-required__sms-only': this.props.twoStepAuthorization.isTwoStepSMSEnabled(),
 			} );
+		
+		const showVerification = classNames( {
+					'is-visible': { smsCodeSent: true },
+			} );
+		
 		
 		return (
 			<Dialog
