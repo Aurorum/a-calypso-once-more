@@ -210,10 +210,6 @@ const ReauthRequired = createReactClass( {
 					'reauth-required__sms-only': this.props.twoStepAuthorization.isTwoStepSMSEnabled(),
 			} );
 		
-		const showVerification = classNames( {
-					'is-visible': smsCodeSent;
-			} );
-
 		return (
 			<Dialog
 				autoFocus={ false }
