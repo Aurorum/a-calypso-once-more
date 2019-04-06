@@ -127,24 +127,10 @@ const ReauthRequired = createReactClass( {
 		this.props.twoStepAuthorization.sendSMSCode( function( error, data ) {
 			if ( ! error && data.sent ) {
 				debug( 'SMS code successfully sent' );
-
 			} else {
 				debug( 'There was a failure sending the SMS code.' );
 			}
 		} );
-	},
-	
-	renderVerification: function() {
-		const { smsRequestsAllowed, smsCodeSent } = this.state;
-		return (
-					<FormButton
-							disabled={ this.state.validatingCode || ! this.preValidateAuthCode() }
-							onClick={ this.getClickHandler( 'Submit Validation Code on Reauth Required' ) }
-							className="reauth-required__verify-button"
-						>
-							{ this.props.translate( 'Verify' ) }
-						</FormButton>
-			);
 	},
 	
 	preValidateAuthCode: function() {
@@ -157,12 +143,12 @@ const ReauthRequired = createReactClass( {
 		const [ clickAction, buttonLabel ] = ! smsCodeSent
 			? [ 'Send SMS Code Button on Reauth Required', this.props.translate( 'Send SMS Code' ) ]
 			: [ 'Resend SMS Code Button on Reauth Required', this.props.translate( 'Resend SMS Code' ) ];
-	
+
 		return (
 			<FormButton
 				disabled={ ! smsRequestsAllowed }
 				isPrimary={ false }
-				onClick={ this.getClickHandler( clickAction, this.sendSMSCode, this.renderVerification ) }
+				onClick={ this.getClickHandler( clickAction, this.sendSMSCode ) }
 				type="button"
 				className="reauth-required__send-sms-code"
 			>
@@ -204,14 +190,18 @@ const ReauthRequired = createReactClass( {
 	render: function() {
 		const method = this.props.twoStepAuthorization.isTwoStepSMSEnabled() ? 'sms' : 'app';
 		
-		const methodClasses = classNames( {
+		const verificationClasses = classNames( {
 					'reauth-required__sms-only': this.props.twoStepAuthorization.isTwoStepSMSEnabled(),
 			} );
 		
+		const showVerification = classNames( {
+					'is-visible': smsCodeSent;
+			} );
+
 		return (
 			<Dialog
 				autoFocus={ false }
-				className={ classNames( 'reauth-required__dialog', methodClasses, this.props.className ) }
+				className={ classNames( 'reauth-required__dialog', verificationClasses, this.props.className ) }
 				isFullScreen={ false }
 				isVisible={ this.props.twoStepAuthorization.isReauthRequired() }
 				buttons={ null }
@@ -219,7 +209,7 @@ const ReauthRequired = createReactClass( {
 			>
 				<p>{ this.getCodeMessage() }</p>
 				
-				<div className="reauth-required__centre"> { this.renderSendSMSButton() } </div>
+				{ this.renderSendSMSButton() }
 
 				<p>
 					<a
@@ -262,8 +252,14 @@ const ReauthRequired = createReactClass( {
 
 					{ this.renderSMSResendThrottled() }
 					
-					{ this.renderVerification() }
-					
+						<FormButton
+							disabled={ this.state.validatingCode || ! this.preValidateAuthCode() }
+							onClick={ this.getClickHandler( 'Submit Validation Code on Reauth Required' ) }
+							id="verify2fa"
+							className={ classNames( 'reauth-required__verify-button', showVerification, this.props.className ) }
+						>
+							{ this.props.translate( 'Verify' ) }
+						</FormButton>
 				</form>
 			</Dialog>
 		);
