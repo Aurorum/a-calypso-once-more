@@ -135,33 +135,8 @@ const ReauthRequired = createReactClass( {
 		return this.state.code.length && this.state.code.length > 5;
 	},
 
-
-	renderTopSendSMSButton: function() {
-		const { smsRequestsAllowed, smsCodeSent } = this.state;
-
-		const [ clickAction, buttonLabel ] = ! smsCodeSent
-			? [ 'Send SMS Code Button on Reauth Required', this.props.translate( 'Send SMS Code' ) ]
-			: [ 'Resend SMS Code Button on Reauth Required', this.props.translate( 'Resend SMS Code' ) ];
+	renderSendSMSButton: function() {
 		
-		if ( ! this.props.twoStepAuthorization.isTwoStepSMSEnabled() ) {
-			return null;
-		}
-			return (
-				<FormButton
-					disabled={ ! smsRequestsAllowed }
-					isPrimary={ ! smsCodeSent }
-					onClick={ this.getClickHandler( clickAction, this.sendSMSCode ) }
-					type="button"
-					className="reauth-required__send-sms-code-top"
-				>
-					{ buttonLabel }
-				</FormButton>
-			);	
-		},
-
-	renderBottomSendSMSButton: function() {
-		if ( ! this.props.twoStepAuthorization.isTwoStepSMSEnabled() ) {
-			
 			const { smsRequestsAllowed, smsCodeSent } = this.state;
 			const [ clickAction, buttonLabel ] = ! smsCodeSent
 				? [ 'Send SMS Code Button on Reauth Required', this.props.translate( 'Send SMS Code' ) ]
@@ -170,14 +145,13 @@ const ReauthRequired = createReactClass( {
 			return (
 				<FormButton
 					disabled={ ! smsRequestsAllowed }
-					isPrimary={ false }
+					isPrimary={ ! smsCodeSent && this.props.twoStepAuthorization.isTwoStepSMSEnabled() }
 					onClick={ this.getClickHandler( clickAction, this.sendSMSCode ) }
 					type="button"
 				>
 					{ buttonLabel }
 				</FormButton>
 			);
-		}
 	},
 	
 	renderVerifyButton: function() {
@@ -237,8 +211,6 @@ const ReauthRequired = createReactClass( {
 			>
 				<p>{ this.getCodeMessage() }</p>
 				
-				{ this.renderTopSendSMSButton() }
-
 				<p>
 					<a
 						className="reauth-required__sign-out"
@@ -266,7 +238,7 @@ const ReauthRequired = createReactClass( {
 						{ this.renderFailedValidationMsg() }
 					</FormFieldset>
 
-					<FormFieldset className="reauth-required__remember-checkbox">
+					<FormFieldset>
 						<FormLabel>
 							<FormCheckbox
 								id="remember2fa"
@@ -281,10 +253,10 @@ const ReauthRequired = createReactClass( {
 
 					{ this.renderSMSResendThrottled() }
 
-					<FormButtonsBar className="reauth-required__buttons">
+					<FormButtonsBar>
 					{ this.renderVerifyButton() }
 
-					{ this.renderBottomSendSMSButton() }
+					{ this.renderSendSMSButton() }
 					</FormButtonsBar>
 				</form>
 			</Dialog>
