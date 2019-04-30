@@ -34,6 +34,10 @@ const PurchasesHeader = ( { section } ) => {
 				<NavItem path={ billingHistory } selected={ section === 'billing' }>
 					{ i18n.translate( 'Billing History' ) }
 				</NavItem>
+				
+				<NavItem path={ purchasesRoot + '/upcoming-charges' } selected={ section === 'charges' }>
+					{ i18n.translate( 'Billing History' ) }
+				</NavItem>
 
 				{ config.isEnabled( 'async-payments' ) && (
 					<NavItem path={ purchasesRoot + '/pending' } selected={ section === 'pending' }>
