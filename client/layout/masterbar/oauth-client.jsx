@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -14,6 +12,11 @@ import PropTypes from 'prop-types';
 import { localizeUrl } from 'lib/i18n-utils';
 import { isCrowdsignalOAuth2Client, isWooOAuth2Client } from 'lib/oauth2-clients';
 import CrowdsignalOauthMasterbar from './crowdsignal';
+
+/**
+ * Style dependencies
+ */
+import './oauth-client.scss';
 
 const DefaultOauthClientMasterbar = ( { oauth2Client } ) => (
 	<header className="masterbar masterbar__oauth-client">
