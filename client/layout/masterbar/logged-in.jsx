@@ -1,4 +1,3 @@
-/** @format */
 /**
  * External dependencies
  */
@@ -30,6 +29,11 @@ import { getSelectedSiteId } from 'state/ui/selectors';
 import { getSiteSlug } from 'state/sites/selectors';
 import { getStatsPathForTab } from 'lib/route';
 import { domainManagementList } from 'my-sites/domains/paths';
+
+/**
+ * Style dependencies
+ */
+import './style.scss';
 
 class MasterbarLoggedIn extends React.Component {
 	static propTypes = {
