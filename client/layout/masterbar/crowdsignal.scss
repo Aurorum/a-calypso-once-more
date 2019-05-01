@@ -1,5 +1,5 @@
 .masterbar.masterbar__crowdsignal {
-	background-color: #fff;
+	background-color: var( --color-white );
 	border: 0;
 	box-sizing: border-box;
 	font-family: 'Muli', $sans;
@@ -45,7 +45,7 @@
 }
 
 .masterbar__crowdsignal-text {
-	color: #969ca1;
+	color: var( --color-neutral-300 );
 	display: flex;
 	flex-direction: column;
 	font-size: 10px;
@@ -76,5 +76,5 @@
 }
 
 .masterbar__crowdsignal-wordpress-logo {
-	fill: #3d4145;
+	fill: var( --color-neutral-700 );
 }
