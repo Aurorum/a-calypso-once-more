@@ -38,6 +38,11 @@ import Main from 'components/main';
 import JetpackImporter from './jetpack-importer';
 
 /**
+ * Style dependencies
+ */
+import './style.scss';
+
+/**
  * Configuration for each of the importers to be rendered in this section. If
  * you're adding a new importer, add it here. Importers will be rendered in the
  * order they are listed in this array.
