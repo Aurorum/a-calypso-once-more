@@ -272,7 +272,7 @@ class SiteSettingsImport extends Component {
 			<Main>
 				<DocumentHead title={ translate( 'Import' ) } />
 				<div className="importer__section-import">
-					<h2>{ translate( 'Import Your Content' ) }</h2>
+					<h2>{ translate( 'Import your Content' ) }</h2>
 					<p>
 						{ translate(
 							'Import content from another site. '
