@@ -35,7 +35,6 @@ import EmailVerificationGate from 'components/email-verification/email-verificat
 import { getSelectedSite, getSelectedSiteSlug } from 'state/ui/selectors';
 import { getSelectedImportEngine, getImporterSiteUrl } from 'state/importer-nux/temp-selectors';
 import Main from 'components/main';
-import DescriptiveHeader from './descriptive-header';
 import JetpackImporter from './jetpack-importer';
 
 /**
@@ -255,7 +254,6 @@ class SiteSettingsImport extends Component {
 		return (
 			<>
 				<Interval onTick={ this.updateFromAPI } period={ EVERY_FIVE_SECONDS } />
-				<DescriptiveHeader />
 				{ this.renderImporters() }
 			</>
 		);
