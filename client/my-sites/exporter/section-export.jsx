@@ -9,7 +9,7 @@ import { localize } from 'i18n-calypso';
  * Internal dependencies
  */
 import EmptyContent from 'components/empty-content';
-import ExporterContainer from './exporter';
+import ExporterContainer from '../exporter';
 import Main from 'components/main';
 import { getSelectedSite, getSelectedSiteId, getSelectedSiteSlug } from 'state/ui/selectors';
 import { isJetpackSite } from 'state/sites/selectors';
@@ -22,7 +22,7 @@ import './style.scss';
 const SiteSettingsExport = ( { isJetpack, site, siteSlug, translate } ) => (
 	<Main>
 		<div className="exporter__section-export">
-			<h2>{ translate( 'Export' ) }</h2>
+			<h2>{ translate( 'Export your Content' ) }</h2>
 			<p>{ translate( 'With WordPress, you own your content.' ) }</p>
 		</div>
 		{ isJetpack && (
