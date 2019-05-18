@@ -14,6 +14,11 @@ import Main from 'components/main';
 import { getSelectedSite, getSelectedSiteId, getSelectedSiteSlug } from 'state/ui/selectors';
 import { isJetpackSite } from 'state/sites/selectors';
 
+/**
+ * Style dependencies
+ */
+import './style.scss';
+
 const SiteSettingsExport = ( { isJetpack, site, siteSlug, translate } ) => (
 	<Main>
 		<div className="exporter__section-export">
