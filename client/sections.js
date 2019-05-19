@@ -125,6 +125,13 @@ const sections = [
 		group: 'sites',
 	},
 	{
+		name: 'exporter',
+		paths: [ '/exporter' ],
+		module: 'my-sites/exporter',
+		secondary: true,
+		group: 'sites',
+	},
+	{
 		name: 'settings-performance',
 		paths: [ '/settings/performance' ],
 		module: 'my-sites/site-settings/settings-performance',
