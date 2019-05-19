@@ -17,7 +17,7 @@ export default () => {
 		'/exporter/:site_id?',
 		siteSelection,
 		navigation,
-		helloWorld,
+		exportController,
 		makeLayout,
 		clientRender
 	);
