@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import React from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
 
@@ -19,25 +19,27 @@ import { isJetpackSite } from 'state/sites/selectors';
  */
 import './style.scss';
 
-const SiteSettingsExport = ( { isJetpack, site, siteSlug, translate } ) => (
-	<Main>
-		<div className="exporter__main">
-			<h2>{ translate( 'Export your Content' ) }</h2>
-			<p>{ translate( 'With WordPress, you own your content.' ) }</p>
-		</div>
-		{ isJetpack && (
-			<EmptyContent
-				illustration="/calypso/images/illustrations/illustration-jetpack.svg"
-				title={ translate( 'Want to export your site?' ) }
-				line={ translate( "Visit your site's wp-admin for all your import and export needs." ) }
-				action={ translate( 'Export %(siteTitle)s', { args: { siteTitle: site.title } } ) }
-				actionURL={ site.options.admin_url + 'export.php' }
-				actionTarget="_blank"
-			/>
-		) }
-		{ isJetpack === false && <ExporterContainer /> }
-	</Main>
-);
+class Exporter extends Component {
+	const SiteSettingsExport = ( { isJetpack, site, siteSlug, translate } ) => (
+		<Main>
+			<div className="exporter__main">
+				<h2>{ translate( 'Export your Content' ) }</h2>
+				<p>{ translate( 'With WordPress, you own your content.' ) }</p>
+			</div>
+			{ isJetpack && (
+				<EmptyContent
+					illustration="/calypso/images/illustrations/illustration-jetpack.svg"
+					title={ translate( 'Want to export your site?' ) }
+					line={ translate( "Visit your site's wp-admin for all your import and export needs." ) }
+					action={ translate( 'Export %(siteTitle)s', { args: { siteTitle: site.title } } ) }
+					actionURL={ site.options.admin_url + 'export.php' }
+					actionTarget="_blank"
+				/>
+			) }
+			{ isJetpack === false && <ExporterContainer /> }
+		</Main>
+	);
+}
 
 export default connect( state => {
 	const site = getSelectedSite( state );
@@ -47,4 +49,4 @@ export default connect( state => {
 		site,
 		siteSlug: getSelectedSiteSlug( state ),
 	};
-} )( localize( SiteSettingsExport ) );
+} )( localize( Exporter ) );
