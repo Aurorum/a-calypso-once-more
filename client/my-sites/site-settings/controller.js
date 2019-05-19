@@ -99,7 +99,7 @@ export function importSite( context, next ) {
 }
 
 export function exportSite( context, next ) {
-	context.primary = <AsyncLoad require="my-sites/exporter/section-export" />;
+	context.primary = <AsyncLoad require="my-sites/exporter/main" />;
 	next();
 }
 
