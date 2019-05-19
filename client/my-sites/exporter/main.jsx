@@ -21,7 +21,7 @@ import './style.scss';
 
 const SiteSettingsExport = ( { isJetpack, site, siteSlug, translate } ) => (
 	<Main>
-		<div className="exporter__section-export">
+		<div className="exporter__main">
 			<h2>{ translate( 'Export your Content' ) }</h2>
 			<p>{ translate( 'With WordPress, you own your content.' ) }</p>
 		</div>
