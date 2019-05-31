@@ -41,5 +41,12 @@ export default function( translate ) {
 				cssClass: 'is-sakura',
 			},
 		},
+		{
+			label: translate( 'Laser Black' ),
+			value: 'laser-black',
+			thumbnail: {
+				cssClass: 'is-laser-black',
+			},
+		},
 	] );
 }
