@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -17,6 +15,11 @@ import CommentNavigationTab from 'my-sites/comments/comment-navigation/comment-n
 import NavTabs from 'components/section-nav/tabs';
 import NavItem from 'components/section-nav/item';
 import Search from 'components/search';
+
+/**
+ * Style dependencies
+ */
+import './style.scss';
 
 /**
  * Main
