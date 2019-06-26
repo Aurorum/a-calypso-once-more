@@ -14,6 +14,21 @@
 	transform: translateZ( 0 );
 	backface-visibility: hidden;
 
+	.happychat__title {
+		cursor: default;
+		padding: 0;
+		background: var( --color-surface );
+		color: var( --color-neutral-dark );
+		flex: 0 0 auto;
+		display: flex;
+		align-items: center;
+		line-height: 32px;
+	}
+
+	.happychat__active-toolbar > div {
+		padding: 4px 11px;
+	}
+
 	&.is-open {
 		display: block;
 		background: var( --color-neutral-0 );
