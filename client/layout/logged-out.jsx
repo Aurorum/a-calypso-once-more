@@ -119,8 +119,8 @@ LayoutLoggedOut.propTypes = {
 export default connect( state => {
 	const section = getSection( state );
 	const currentRoute = getCurrentRoute( state );
-	const isJetpackLogin = currentRoute === '/log-in/jetpack';
-	const noMasterbarForRoute = currentRoute === '/log-in/jetpack';
+	const isJetpackLogin = currentRoute === '/log-in/jetpack' || currentRoute === '/log-in/jetpack/link';
+	const noMasterbarForRoute = currentRoute === '/log-in/jetpack' || currentRoute === '/log-in/jetpack/link';
 	const noMasterbarForSection = 'signup' === section.name || 'jetpack-connect' === section.name;
 	const isJetpackWooCommerceFlow =
 		'woocommerce-setup-wizard' === get( getCurrentQueryArguments( state ), 'from' );
