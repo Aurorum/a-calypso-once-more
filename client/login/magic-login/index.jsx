@@ -118,6 +118,8 @@ class MagicLogin extends React.Component {
 	render() {
 		return (
 			<Main className="magic-login magic-login__request-link">
+				{ this.props.isJetpackLogin && ( <JetpackHeader/> ) }
+
 				{ this.renderLocaleSuggestions() }
 
 				<GlobalNotices id="notices" notices={ notices.list } />
