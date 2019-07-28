@@ -20,6 +20,7 @@ import { CHECK_YOUR_EMAIL_PAGE } from 'state/login/magic-login/constants';
 import getCurrentLocaleSlug from 'state/selectors/get-current-locale-slug';
 import getCurrentQueryArguments from 'state/selectors/get-current-query-arguments';
 import getMagicLoginCurrentView from 'state/selectors/get-magic-login-current-view';
+import { getCurrentRoute } from 'state/selectors/get-current-route';
 import { hideMagicLoginRequestForm } from 'state/login/magic-login/actions';
 import LocaleSuggestions from 'components/locale-suggestions';
 import {
@@ -77,7 +78,7 @@ class MagicLogin extends React.Component {
 	};
 
 	renderLinks() {
-		const { locale, showCheckYourEmail, translate } = this.props;
+		const { isJetpackLogin, locale, showCheckYourEmail, translate } = this.props;
 
 		if ( showCheckYourEmail ) {
 			return null;
@@ -89,6 +90,7 @@ class MagicLogin extends React.Component {
 		// paste somewhere else, their email address isn't included in it.
 		const loginParameters = {
 			isNative: true,
+			isJetpack: isJetpackLogin,
 			locale: locale,
 		};
 
@@ -131,6 +133,7 @@ const mapState = state => ( {
 	locale: getCurrentLocaleSlug( state ),
 	query: getCurrentQueryArguments( state ),
 	showCheckYourEmail: getMagicLoginCurrentView( state ) === CHECK_YOUR_EMAIL_PAGE,
+	isJetpackLogin: getCurrentRoute( state ) === '/log-in/jetpack/link',
 } );
 
 const mapDispatch = {
