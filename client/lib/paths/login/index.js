@@ -28,6 +28,8 @@ export function login( {
 
 		if ( socialService ) {
 			url += '/' + socialService + '/callback';
+		} else if ( isJetpack && twoFactorAuthType ) {
+			url += '/jetpack/' + twoFactorAuthType;
 		} else if ( twoFactorAuthType ) {
 			url += '/' + twoFactorAuthType;
 		} else if ( socialConnect ) {
