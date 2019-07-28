@@ -17,6 +17,7 @@ export function login( {
 	twoFactorAuthType,
 	socialConnect,
 	emailAddress,
+	jetpackRoute,
 	socialService,
 	oauth2ClientId,
 	site,
@@ -28,8 +29,8 @@ export function login( {
 
 		if ( socialService ) {
 			url += '/' + socialService + '/callback';
-		} else if ( isJetpack && twoFactorAuthType ) {
-			url += '/jetpack/' + twoFactorAuthType;
+		} else if ( jetpackRoute ) {
+			url += '/jetpack/' + jetpackRoute;
 		} else if ( twoFactorAuthType ) {
 			url += '/' + twoFactorAuthType;
 		} else if ( socialConnect ) {
