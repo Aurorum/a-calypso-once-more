@@ -68,6 +68,7 @@ class MagicLogin extends React.Component {
 
 		const loginParameters = {
 			isNative: true,
+			isJetpack: this.props.isJetpackLogin,
 			locale: this.props.locale,
 		};
 		const emailAddress = get( this.props, [ 'query', 'email_address' ] );
