@@ -81,7 +81,7 @@ class EmailedLoginLinkSuccessfully extends React.Component {
 
 				<div className="magic-login__footer">
 					<a
-						href={ login( { isNative: true, locale: this.props.locale } ) }
+						href={ login( { isNative: true, isJetpack: this.props.isJetpackLogin, locale: this.props.locale } ) }
 						onClick={ this.onClickBackLink }
 					>
 						<Gridicon icon="arrow-left" size={ 18 } />
