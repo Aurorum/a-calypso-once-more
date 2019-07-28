@@ -17,7 +17,6 @@ export function login( {
 	twoFactorAuthType,
 	socialConnect,
 	emailAddress,
-	jetpackRoute,
 	socialService,
 	oauth2ClientId,
 	site,
