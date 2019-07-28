@@ -23,6 +23,7 @@ import {
 	enhanceWithSiteType,
 } from 'state/analytics/actions';
 import { withEnhancers } from 'state/utils';
+import { getCurrentRoute } from 'state/selectors/get-current-route';
 import Gridicon from 'gridicons';
 
 class EmailedLoginLinkSuccessfully extends React.Component {
@@ -41,7 +42,9 @@ class EmailedLoginLinkSuccessfully extends React.Component {
 
 		this.props.hideMagicLoginRequestForm();
 
-		page( login( { isNative: true, locale: this.props.locale } ) );
+		page(
+			login( { isNative: true, isJetpack: this.props.isJetpackLogin, locale: this.props.locale } )
+		);
 	};
 
 	render() {
@@ -92,6 +95,7 @@ class EmailedLoginLinkSuccessfully extends React.Component {
 
 const mapState = state => ( {
 	locale: getCurrentLocaleSlug( state ),
+	isJetpackLogin: getCurrentRoute( state ) === '/log-in/jetpack/link',
 } );
 
 const mapDispatch = {
