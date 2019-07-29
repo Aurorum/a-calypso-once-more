@@ -63,6 +63,13 @@ export default function( translate ) {
 			},
 		},
 		{
+			label: translate( 'Laser Black' ),
+			value: 'laser-black',
+			thumbnail: {
+				cssClass: 'is-laser-black',
+			},
+		},
+		{
 			label: translate( 'Contrast' ),
 			value: 'contrast',
 			thumbnail: {
