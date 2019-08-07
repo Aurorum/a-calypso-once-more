@@ -17,6 +17,7 @@ import { hasFeature } from 'state/sites/plans/selectors';
 import { isCurrentPlanPaid, isJetpackSite } from 'state/sites/selectors';
 import isSiteAutomatedTransfer from 'state/selectors/is-site-automated-transfer';
 import { isRequestingWordAdsApprovalForSite } from 'state/wordads/approve/selectors';
+import { canAccessAds } from 'lib/ads/utils';
 import PromoSection, { Props as PromoSectionProps } from 'components/promo-section';
 import QueryMembershipsSettings from 'components/data/query-memberships-settings';
 import QueryWordadsStatus from 'components/data/query-wordads-status';
@@ -291,7 +292,7 @@ export default connect< ConnectedProps, {}, {} >(
 				[ 'memberships', 'settings', site.ID, 'connectedAccountId' ],
 				false
 			),
-			hasSetupAds: site.options.wordads || isRequestingWordAdsApprovalForSite( state, site ),
+			hasSetupAds: canAccessAds( site ) || isRequestingWordAdsApprovalForSite( state, site ),
 		};
 	},
 	dispatch => ( {
