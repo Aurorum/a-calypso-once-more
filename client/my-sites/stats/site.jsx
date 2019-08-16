@@ -1,5 +1,3 @@
-/** @format */
-
 /**
  * External dependencies
  */
@@ -28,10 +26,16 @@ import titlecase from 'to-title-case';
 import PageViewTracker from 'lib/analytics/page-view-tracker';
 import StatsBanners from './stats-banners';
 import StickyPanel from 'components/sticky-panel';
+import EmptyContent from 'components/empty-content';
 import JetpackColophon from 'components/jetpack-colophon';
 import config from 'config';
 import { getSelectedSiteId, getSelectedSiteSlug } from 'state/ui/selectors';
-import { isJetpackSite, getSitePlanSlug } from 'state/sites/selectors';
+import {
+	isJetpackSite,
+	isJetpackModuleActive,
+	getSitePlanSlug,
+	getSiteAdminUrl,
+} from 'state/sites/selectors';
 import { recordGoogleEvent } from 'state/analytics/actions';
 import PrivacyPolicyBanner from 'blocks/privacy-policy-banner';
 import QuerySiteKeyrings from 'components/data/query-site-keyrings';
@@ -124,7 +128,7 @@ class StatsSite extends Component {
 	};
 
 	render() {
-		const { date, isJetpack, siteId, slug } = this.props;
+		const { date, isJetpack, isStatsModuleActive, activateStatsUrl, siteId, slug } = this.props;
 
 		const queryDate = date.format( 'YYYY-MM-DD' );
 		const { period, endOf } = this.props.period;
@@ -133,6 +137,23 @@ class StatsSite extends Component {
 		let fileDownloadList;
 
 		const query = memoizedQuery( period, endOf );
+
+		// Prompt to enable Stats module should it be disabled
+		if ( isJetpack && ! isStatsModuleActive ) {
+			return (
+				<Main>
+					<DocumentHead title={ translate( 'Stats' ) } />
+					<SidebarNavigation />
+					<EmptyContent
+						illustration="/calypso/images/illustrations/illustration-404.svg"
+						title={ translate( 'Looking for stats?' ) }
+						line={ translate( 'We need you to enable the stats feature in Jetpack' ) }
+						action={ translate( 'Enable stats' ) }
+						actionURL={ activateStatsUrl }
+					/>
+				</Main>
+			);
+		}
 
 		// Video plays and file downloads are not yet supported in Jetpack Stats
 		if ( ! isJetpack ) {
@@ -282,6 +303,12 @@ export default connect(
 			siteId,
 			slug: getSelectedSiteSlug( state ),
 			planSlug: getSitePlanSlug( state, siteId ),
+			isStatsModuleActive: isJetpackModuleActive( state, siteId, 'stats' ),
+			activateStatsUrl: getSiteAdminUrl(
+				state,
+				siteId,
+				'/admin.php?page=jetpack_modules&module_tag=Site%20Stats'
+			),
 		};
 	},
 	{ recordGoogleEvent }
