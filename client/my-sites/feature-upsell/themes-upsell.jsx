@@ -21,6 +21,7 @@ import { getPlanPath } from 'lib/plans';
 import { recordTracksEvent } from 'state/analytics/actions';
 import PageViewTracker from 'lib/analytics/page-view-tracker';
 import DocumentHead from 'components/data/document-head';
+import Card from 'components/card';
 import page from 'page';
 import { PLAN_BUSINESS, FEATURE_UPLOAD_THEMES } from 'lib/plans/constants';
 import Feature from 'my-sites/feature-upsell/feature';
@@ -87,7 +88,7 @@ class ThemesUpsellComponent extends Component {
 				<PageViewTracker path={ '/feature/themes/:site' } title="ThemesUpsell" />
 				<DocumentHead title={ 'Themes' } />
 
-				<div className="feature-upsell__card">
+				<Card className="feature-upsell__card">
 					<h1 className="feature-upsell__card-header is-capital is-main">
 						Use any theme with a Business plan
 					</h1>
@@ -104,7 +105,7 @@ class ThemesUpsellComponent extends Component {
 							Click here to upgrade your site to the Business plan now!
 						</button>
 					</div>
-				</div>
+				</Card>
 
 				<div className="feature-upsell__text-content">
 					<h2 className="feature-upsell__header-section">
