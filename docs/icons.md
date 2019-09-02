@@ -10,8 +10,8 @@ This document will cover how to use icons in Calypso, as well as how to create i
 
 Gridicons are born with a 24px base grid. Strokes are 2px thick and icons are solid. If an icon is hollow, it generally means the "inactive" version of that icon. For example an outline bookmark icon becomes solid once clicked.
 
-Calypso has a specific Gridicon component that should be used instead of the one included in the `gridicons` package, since it offers better loading performance.
-Any usage of `gridicons` gets rewritten to `components/gridicon`.
+Calypso has a specific Gridicon component that should be used instead of the one included in the `gridicons` package, since it offers better loading performance. Any usage of `gridicons` should be rewritten to `components/gridicon`.
+
 You should not use `gridicons/dist/...`, as that will load a legacy gridicon and cause duplication in the bundles.
 
 ### Usage
@@ -20,8 +20,7 @@ Import the iconset and decide at run-time which icon to use:
 
 ```
 import Gridicon from 'components/gridicon';
-// or `import Gridicon from 'gridicons'`;
-//...
+
 render() {
   return <Gridicon icon="add-image" />;
 }
@@ -59,6 +58,7 @@ The tricky part is that not all icons need this `offset-adjust` hack, only some 
 - Do use Gridicons at 36px if you add the `offset-adjust` hack on a per-icon basis
 - Only use 18px Gridicons if you really must, and don't use it in main navigation
 - Don't use Noticons or Dashicons (we want to phase them out)
+- Don't import from 'gridicon' directly (this would trigger a lint error) 
 
 ## Social Logos
 
