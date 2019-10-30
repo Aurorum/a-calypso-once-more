@@ -272,6 +272,10 @@ $z-layers: (
 		'.button.upwork-banner__cta': 2,
 		'.button.upwork-banner__close': 4
 	),
+	'.payment-box__pm-wrapper ': (
+		'.section-nav-tab:after': -1,
+		'.section-nav-tab': 1
+	),
 
 	// The following may be inserted into different areas.
 	// The parent stacking context may be root, or something else depending on where it is inserted.
