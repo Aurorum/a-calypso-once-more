@@ -13,7 +13,18 @@
 	}
 }
 
-.ellipsis-menu__menu .button .gridicon {
-	top: inherit;
-	margin-top: inherit;
+.ellipsis-menu__menu {	
+	.button .gridicon {
+		top: inherit;
+		margin-top: inherit;
+	}
+	
+	.clipboard-button {
+		border: 0;
+		font-weight: inherit;
+		
+		* {
+			margin-left: 1.2px;
+		}
+	}
 }
