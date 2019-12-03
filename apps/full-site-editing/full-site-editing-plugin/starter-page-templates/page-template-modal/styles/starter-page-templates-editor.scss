@@ -553,7 +553,10 @@ body:not( .is-fullscreen-mode ) {
 }
 
 .sidebar-modal-opener__warning-options {
-	display: flex;
-	justify-content: space-around;
+	float: right;
 	margin-top: 20px;
+
+	.is-button.is-default {
+		margin-right: 12px;
+	}
 }
