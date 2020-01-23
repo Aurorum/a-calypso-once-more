@@ -271,7 +271,7 @@ class StatsSite extends Component {
 		const { slug } = this.props;
 		return (
 			<EmptyContent
-				illustration="/calypso/images/illustrations/illustration-404.svg"
+				illustration="/calypso/images/illustrations/stats.svg"
 				title={ translate( 'Looking for Stats?' ) }
 				line={ translate( 'Enable Site Stats in Marketing > Traffic' ) }
 				action={ translate( 'Enable Site Stats' ) }
