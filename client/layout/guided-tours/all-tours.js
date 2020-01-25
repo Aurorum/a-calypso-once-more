@@ -14,6 +14,7 @@ import { ChecklistSiteTitleTour } from './tours/checklist-site-title-tour';
 import { ChecklistUserAvatarTour } from './tours/checklist-user-avatar-tour';
 import { ChecklistUserEmailTour } from './tours/checklist-user-email-tour';
 import { EditorBasicsTour } from './tours/editor-basics-tour';
+import { FreePhotoLibraryTour } from './tours/free-photo-libary-tour';
 import { GDocsIntegrationTour } from './tours/gdocs-integration-tour';
 import { JetpackBackupsRewindTour } from './tours/jetpack-backups-rewind-tour';
 import { JetpackChecklistTour } from './tours/jetpack-checklist-tour';
@@ -44,6 +45,7 @@ export default combineTours( {
 	checklistUserAvatar: ChecklistUserAvatarTour,
 	checklistUserEmail: ChecklistUserEmailTour,
 	editorBasicsTour: EditorBasicsTour,
+	freePhotoLibraryTour: FreePhotoLibraryTour,
 	gdocsIntegrationTour: GDocsIntegrationTour,
 	jetpackBackupsRewind: JetpackBackupsRewindTour,
 	jetpackChecklistTour: JetpackChecklistTour,
