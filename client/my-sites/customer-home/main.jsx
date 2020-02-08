@@ -212,6 +212,7 @@ class Home extends Component {
 			currentThemeId,
 			siteIsUnlaunched,
 			isAtomic,
+			trackAction,
 		} = this.props;
 
 		// Show a thank-you message 30 mins post site creation/purchase
@@ -273,7 +274,6 @@ class Home extends Component {
 						<div className="customer-home__launch-card-text">
 							<CardHeading>{ translate( 'You launched your site!' ) }</CardHeading>
 							<p className="customer-home__launch-card-subtext">
-								{ ' ' }
 								{ this.getChecklistSubHeaderText() }
 							</p>
 						</div>
@@ -496,7 +496,6 @@ class Home extends Component {
 			needsEmailVerification,
 			translate,
 			checklistMode,
-			site,
 			siteSlug,
 			trackAction,
 			expandToolsAndTrack,
@@ -505,8 +504,6 @@ class Home extends Component {
 			hasChecklistData,
 			siteIsUnlaunched,
 		} = this.props;
-		const editHomePageUrl =
-			isStaticHomePage && `/block-editor/page/${ siteSlug }/${ staticHomePageId }`;
 
 		if ( ! hasChecklistData ) {
 			return <div className="customer-home__loading-placeholder"></div>;
