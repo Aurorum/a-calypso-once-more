@@ -26,6 +26,15 @@ export default {
 		defaultVariation: 'hide',
 		allowExistingUsers: true,
 	},
+	showCompositeCheckout: {
+		datestamp: '20200219',
+		variations: {
+			composite: 10,
+			regular: 90,
+		},
+		defaultVariation: 'regular',
+		allowExistingUsers: true,
+	},
 	skipThemesSelectionModal: {
 		datestamp: '20170904',
 		variations: {
@@ -97,63 +106,22 @@ export default {
 		defaultVariation: 'variantShowUpdates',
 		allowExistingUsers: true,
 	},
-	domainStepMoveParagraph: {
-		datestamp: '20191216',
+	sidebarUpsellNudgeUnification: {
+		datestamp: '20200127',
 		variations: {
-			variantMoveParagraph: 50,
+			variantShowUnifiedUpsells: 50,
 			control: 50,
 		},
 		defaultVariation: 'control',
 		allowExistingUsers: true,
 	},
-	nonEnglishDomainStepCopyUpdates: {
-		datestamp: '20191219',
+	domainStepDesignUpdates: {
+		datestamp: '20200220',
 		variations: {
-			variantShowUpdates: 50,
+			variantDesignUpdates: 50,
 			control: 50,
 		},
 		defaultVariation: 'control',
 		allowExistingUsers: true,
-		localeTargets: 'any',
-		localeExceptions: [ 'en' ],
-	},
-	showBusinessPlanPopular: {
-		datestamp: '20200109',
-		variations: {
-			variantShowBizPopular: 50,
-			control: 50,
-		},
-		defaultVariation: 'control',
-		allowExistingUsers: true,
-		localeTargets: 'any',
-		localeExceptions: [ 'en' ],
-	},
-	readerFreeToPaidPlanNudge: {
-		datestamp: '20200102',
-		variations: {
-			display: 50,
-			control: 50,
-		},
-		defaultVariation: 'control',
-		allowExistingUsers: false,
-		localeTargets: 'any',
-	},
-	showPlanBumpVsGsuite: {
-		datestamp: '20200107',
-		variations: {
-			variantShowPlanBumpOffer: 50,
-			control: 50,
-		},
-		defaultVariation: 'control',
-		allowExistingUsers: true,
-	},
-	redirectToCustomerHome: {
-		datestamp: '20200117',
-		variations: {
-			variant: 10,
-			control: 90,
-		},
-		defaultVariation: 'control',
-		allowExistingUsers: false,
 	},
 };

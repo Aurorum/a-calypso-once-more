@@ -13,6 +13,7 @@ import {
 	useDispatch,
 	useMessages,
 	useLineItems,
+	useEvents,
 	renderDisplayValueMarkdown,
 } from '../../public-api';
 import { sprintf, useLocalize } from '../localize';
@@ -20,14 +21,7 @@ import { useFormStatus } from '../form-status';
 
 const debug = debugFactory( 'composite-checkout:full-credits-payment-method' );
 
-export function createFullCreditsMethod( {
-	registerStore,
-	submitTransaction,
-	creditsDisplayValue,
-	label,
-	summary,
-	buttonText,
-} ) {
+export function createFullCreditsMethod( { registerStore, submitTransaction } ) {
 	const actions = {
 		*beginCreditsTransaction( payload ) {
 			let response;
@@ -89,25 +83,25 @@ export function createFullCreditsMethod( {
 
 	return {
 		id: 'full-credits',
-		label: label || <FullCreditsLabel creditsDisplayValue={ creditsDisplayValue } />,
-		submitButton: <FullCreditsSubmitButton buttonText={ buttonText } />,
-		inactiveContent: summary || <FullCreditsSummary />,
+		label: <FullCreditsLabel />,
+		submitButton: <FullCreditsSubmitButton />,
+		inactiveContent: <FullCreditsSummary />,
 		getAriaLabel: localize => localize( 'Credits' ),
 	};
 }
 
-function FullCreditsLabel( { creditsDisplayValue } ) {
+function FullCreditsLabel() {
 	const localize = useLocalize();
 
 	return (
 		<React.Fragment>
 			<div>{ localize( 'Credits' ) }</div>
-			<div>{ sprintf( localize( 'You have %s in credits available.' ), creditsDisplayValue ) }</div>
+			<div>{ localize( 'Pay entirely with credits' ) }</div>
 		</React.Fragment>
 	);
 }
 
-function FullCreditsSubmitButton( { disabled, buttonText } ) {
+function FullCreditsSubmitButton( { disabled } ) {
 	const localize = useLocalize();
 	const { beginCreditsTransaction } = useDispatch( 'full-credits' );
 	const [ items, total ] = useLineItems();
@@ -115,9 +109,11 @@ function FullCreditsSubmitButton( { disabled, buttonText } ) {
 	const transactionError = useSelect( select => select( 'full-credits' ).getTransactionError() );
 	const { showErrorMessage } = useMessages();
 	const { formStatus, setFormReady, setFormComplete, setFormSubmitting } = useFormStatus();
+	const onEvent = useEvents();
 
 	useEffect( () => {
 		if ( transactionStatus === 'error' ) {
+			onEvent( { type: 'FULL_CREDITS_TRANSACTION_ERROR', payload: transactionError || '' } );
 			showErrorMessage(
 				transactionError || localize( 'An error occurred during the transaction' )
 			);
@@ -128,6 +124,7 @@ function FullCreditsSubmitButton( { disabled, buttonText } ) {
 			setFormComplete();
 		}
 	}, [
+		onEvent,
 		setFormReady,
 		setFormComplete,
 		showErrorMessage,
@@ -138,6 +135,7 @@ function FullCreditsSubmitButton( { disabled, buttonText } ) {
 
 	const onClick = () => {
 		setFormSubmitting();
+		onEvent( { type: 'FULL_CREDITS_TRANSACTION_BEGIN' } );
 		beginCreditsTransaction( {
 			items,
 		} );
@@ -145,9 +143,8 @@ function FullCreditsSubmitButton( { disabled, buttonText } ) {
 	const buttonString =
 		formStatus === 'submitting'
 			? localize( 'Processing...' )
-			: buttonText ||
-			  sprintf(
-					localize( 'Pay %s with Credits' ),
+			: sprintf(
+					localize( 'Pay %s with WordPress.com Credits' ),
 					renderDisplayValueMarkdown( total.amount.displayValue )
 			  );
 	return (

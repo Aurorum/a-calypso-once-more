@@ -158,7 +158,7 @@ It has the following props.
 - `items: object[]`. An array of [line item objects](#line-items) that will be displayed in the form.
 - `total: object`. A [line item object](#line-items) with the final total to be paid.
 - `theme?: object`. A [theme object](#styles-and-themes).
-- `onPaymentComplete: () => null`. A function to call for non-redirect payment methods when payment is successful.
+- `onPaymentComplete: ({paymentMethodId: string}) => null`. A function to call for non-redirect payment methods when payment is successful. Passed the current payment method id.
 - `showErrorMessage: (string) => null`. A function that will display a message with an "error" type.
 - `showInfoMessage: (string) => null`. A function that will display a message with an "info" type.
 - `showSuccessMessage: (string) => null`. A function that will display a message with a "success" type.
@@ -208,7 +208,6 @@ Creates a [Payment Method](#payment-methods) object. Requires passing an object 
 - `submitTransaction: async object => object`. An async function that sends the request to the endpoint.
 - `getCountry: () => string`. A function that returns the country to use for the transaction.
 - `getPostalCode: () => string`. A function that returns the postal code for the transaction.
-- `getPhoneNumber: () => string`. A function that returns the phone number for the transaction.
 
 ### createRegistry
 
@@ -245,8 +244,8 @@ Creates a [Payment Method](#payment-methods) object. Requires passing an object 
 
 - `registerStore: object => object`. The `registerStore` function from the return value of [createRegistry](#createRegistry).
 - `submitTransaction: async object => string`. An async function that sends the request to the endpoint to get the redirect url.
-- `successUrl: string`. The URL to return to after a successful payment redirect.
-- `cancelUrl: string`. The URL to return to after a unsuccessful payment redirect.
+- `getSuccessUrl: () => string`. A function that returns a URL to return to after a successful payment redirect.
+- `getCancelUrl: () => string`. A function that returns a URL to return to after a unsuccessful payment redirect.
 
 ### createStripeMethod
 
@@ -258,7 +257,6 @@ Creates a [Payment Method](#payment-methods) object. Requires passing an object 
 - `getCountry: () => string`. A function that returns the country to use for the transaction.
 - `getPostalCode: () => string`. A function that returns the postal code for the transaction.
 - `getSubdivisionCode: () => string`. A function that returns the subdivision code for the transaction.
-- `getPhoneNumber: () => string`. A function that returns the phone number for the transaction.
 
 ### getDefaultOrderReviewStep
 

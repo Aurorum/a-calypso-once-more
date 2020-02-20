@@ -1,6 +1,7 @@
 /**
  * External dependencies
  */
+import { isMobile } from '@automattic/viewport';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
@@ -8,16 +9,15 @@ import { localize } from 'i18n-calypso';
 import page from 'page';
 import { flowRight } from 'lodash';
 import moment from 'moment';
-import classnames from 'classnames';
 
 /**
  * Internal dependencies
  */
-import AppsBadge from 'blocks/get-apps/apps-badge';
 import Banner from 'components/banner';
 import { Button, Card } from '@automattic/components';
 import CardHeading from 'components/card-heading';
 import EmptyContent from 'components/empty-content';
+import FoldableCard from 'components/foldable-card';
 import Main from 'components/main';
 import VerticalNav from 'components/vertical-nav';
 import VerticalNavItem from 'components/vertical-nav/item';
@@ -43,8 +43,6 @@ import WpcomChecklist from 'my-sites/checklist/wpcom-checklist';
 import withTrackingTool from 'lib/analytics/with-tracking-tool';
 import { getGSuiteSupportedDomains } from 'lib/gsuite';
 import { localizeUrl } from 'lib/i18n-utils';
-import userAgent from 'lib/user-agent';
-import { isDesktop, isMobile } from 'lib/viewport';
 import { launchSiteOrRedirectToLaunchSignupFlow } from 'state/sites/launch/actions';
 import { bumpStat, composeAnalytics, recordTracksEvent } from 'state/analytics/actions';
 import { expandMySitesSidebarSection as expandSection } from 'state/my-sites/sidebar/actions';
@@ -57,6 +55,9 @@ import isSiteOnPaidPlan from 'state/selectors/is-site-on-paid-plan';
 import { getCurrentUser, isCurrentUserEmailVerified } from 'state/current-user/selectors';
 import QueryActiveTheme from 'components/data/query-active-theme';
 import QueryCanonicalTheme from 'components/data/query-canonical-theme';
+import GoMobileCard from 'my-sites/customer-home/go-mobile-card';
+import StatsCard from './stats-card';
+import isEligibleForDotcomChecklist from 'state/selectors/is-eligible-for-dotcom-checklist';
 
 /**
  * Style dependencies
@@ -66,11 +67,9 @@ import './style.scss';
 /**
  * Image dependencies
  */
-import appleStoreLogo from 'assets/images/customer-home/apple-store.png';
 import commentIcon from 'assets/images/customer-home/comment.svg';
 import customDomainIcon from 'assets/images/customer-home/custom-domain.svg';
 import customizeIcon from 'assets/images/customer-home/customize.svg';
-import googlePlayLogo from 'assets/images/customer-home/google-play.png';
 import gSuiteIcon from 'assets/images/customer-home/gsuite.svg';
 import happinessIllustration from 'assets/images/customer-home/happiness.png';
 import imagesIcon from 'assets/images/customer-home/images.svg';
@@ -208,10 +207,12 @@ class Home extends Component {
 			isNewlyCreatedSite,
 			translate,
 			checklistMode,
+			site,
 			siteId,
 			currentThemeId,
 			siteIsUnlaunched,
 			isAtomic,
+			trackAction,
 		} = this.props;
 
 		// Show a thank-you message 30 mins post site creation/purchase
@@ -243,33 +244,42 @@ class Home extends Component {
 			}
 		}
 
-		// Show a congratulatory message post-launch
-		if ( ! siteIsUnlaunched && 'launched' === checklistMode ) {
-			return (
-				<>
-					<img
-						src="/calypso/images/signup/confetti.svg"
-						aria-hidden="true"
-						className="customer-home__confetti"
-						alt=""
-					/>
-					<FormattedHeader
-						headerText={ translate( 'You launched your site!' ) }
-						subHeaderText={ this.getChecklistSubHeaderText() }
-					/>
-				</>
-			);
-		}
-
-		// Show the standard heading otherwise
+		// If launched, show a congratulatory message, else show the standard heading
 		return (
-			<FormattedHeader
-				headerText={ translate( 'My Home' ) }
-				subHeaderText={ translate(
-					'Your home base for all the posting, editing, and growing of your site'
+			<>
+				<div className="customer-home__heading">
+					<FormattedHeader
+						headerText={ translate( 'My Home' ) }
+						subHeaderText={ translate(
+							'Your home base for all the posting, editing, and growing of your site'
+						) }
+						align="left"
+					/>
+					{ ! siteIsUnlaunched && (
+						<div className="customer-home__view-site-button">
+							<Button href={ site.URL } onClick={ () => trackAction( 'my_site', 'view_site' ) }>
+								{ translate( 'View Site' ) }
+							</Button>
+						</div>
+					) }
+				</div>
+				{ ! siteIsUnlaunched && 'launched' === checklistMode && (
+					<Card className="customer-home__launch-card" highlight="info">
+						<img
+							src="/calypso/images/illustrations/fireworks.svg"
+							aria-hidden="true"
+							className="customer-home__launch-fireworks"
+							alt=""
+						/>
+						<div className="customer-home__launch-card-text">
+							<CardHeading>{ translate( 'You launched your site!' ) }</CardHeading>
+							<p className="customer-home__launch-card-subtext">
+								{ this.getChecklistSubHeaderText() }
+							</p>
+						</div>
+					</Card>
 				) }
-				align="left"
-			/>
+			</>
 		);
 	}
 
@@ -327,50 +337,156 @@ class Home extends Component {
 		);
 	}
 
-	renderGoMobile = () => {
-		const { translate } = this.props;
-		const { isiPad, isiPod, isiPhone, isAndroid } = userAgent;
-		const isIos = isiPad || isiPod || isiPhone;
-		const showIosBadge = isDesktop() || isIos || ! isAndroid;
-		const showAndroidBadge = isDesktop() || isAndroid || ! isIos;
-		const showOnlyOneBadge = showIosBadge !== showAndroidBadge;
-		return (
-			<Card
-				className={ classnames( 'customer-home__go-mobile', {
-					'is-single-store': showOnlyOneBadge,
-				} ) }
-			>
-				<div>
-					<CardHeading>{ translate( 'Go Mobile' ) }</CardHeading>
-					<h6 className="customer-home__card-subheader">
-						{ translate( 'Make updates on the go' ) }
-					</h6>
-				</div>
-				<div className="customer-home__card-button-pair customer-home__card-mobile">
-					{ showIosBadge && (
-						<AppsBadge
-							storeLink="https://apps.apple.com/app/apple-store/id335703880?pt=299112&ct=calypso-customer-home&mt=8"
-							storeName={ 'ios' }
-							titleText={ translate( 'Download the WordPress iOS mobile app.' ) }
-							altText={ translate( 'Apple App Store download badge' ) }
-						>
-							<img src={ appleStoreLogo } alt="" />
-						</AppsBadge>
-					) }
-					{ showAndroidBadge && (
-						<AppsBadge
-							storeLink="https://play.google.com/store/apps/details?id=org.wordpress.android&referrer=utm_source%3Dcalypso-customer-home%26utm_medium%3Dweb%26utm_campaign%3Dmobile-download-promo-pages"
-							storeName={ 'android' }
-							titleText={ translate( 'Download the WordPress Android mobile app.' ) }
-							altText={ translate( 'Google Play Store download badge' ) }
-						>
-							<img src={ googlePlayLogo } alt="" />
-						</AppsBadge>
-					) }
-				</div>
-			</Card>
+	renderQuickLinks() {
+		const {
+			displayChecklist,
+			translate,
+			customizeUrl,
+			menusUrl,
+			siteSlug,
+			trackAction,
+			isStaticHomePage,
+			staticHomePageId,
+			showCustomizer,
+			hasCustomDomain,
+		} = this.props;
+
+		const editHomePageUrl =
+			isStaticHomePage && `/block-editor/page/${ siteSlug }/${ staticHomePageId }`;
+
+		const quickLinks = (
+			<div className="customer-home__boxes">
+				{ isStaticHomePage ? (
+					<ActionBox
+						onClick={ () => {
+							trackAction( 'my_site', 'edit_homepage' );
+							page( editHomePageUrl );
+						} }
+						label={ translate( 'Edit homepage' ) }
+						iconSrc={ imagesIcon }
+					/>
+				) : (
+					<ActionBox
+						onClick={ () => {
+							trackAction( 'my_site', 'write_post' );
+							page( `/post/${ siteSlug }` );
+						} }
+						label={ translate( 'Write blog post' ) }
+						iconSrc={ postIcon }
+					/>
+				) }
+				{ isStaticHomePage ? (
+					<ActionBox
+						onClick={ () => {
+							trackAction( 'my_site', 'add_page' );
+							page( `/page/${ siteSlug }` );
+						} }
+						label={ translate( 'Add a page' ) }
+						iconSrc={ pageIcon }
+					/>
+				) : (
+					<ActionBox
+						onClick={ () => {
+							trackAction( 'my_site', 'manage_comments' );
+							page( `/comments/${ siteSlug }` );
+						} }
+						label={ translate( 'Manage comments' ) }
+						iconSrc={ commentIcon }
+					/>
+				) }
+				{ isStaticHomePage ? (
+					<ActionBox
+						onClick={ () => {
+							trackAction( 'my_site', 'write_post' );
+							page( `/post/${ siteSlug }` );
+						} }
+						label={ translate( 'Write blog post' ) }
+						iconSrc={ postIcon }
+					/>
+				) : (
+					<ActionBox
+						onClick={ () => {
+							trackAction( 'my_site', 'add_page' );
+							page( `/page/${ siteSlug }` );
+						} }
+						label={ translate( 'Add a page' ) }
+						iconSrc={ pageIcon }
+					/>
+				) }
+				{ showCustomizer && (
+					<ActionBox
+						href={ menusUrl }
+						onClick={ () => trackAction( 'my_site', 'edit_menus' ) }
+						label={ translate( 'Edit menus' ) }
+						iconSrc={ menuIcon }
+					/>
+				) }
+				{ showCustomizer && (
+					<ActionBox
+						href={ customizeUrl }
+						onClick={ () => trackAction( 'my_site', 'customize_theme' ) }
+						label={ translate( 'Customize theme' ) }
+						iconSrc={ customizeIcon }
+					/>
+				) }
+				<ActionBox
+					onClick={ () => {
+						trackAction( 'my_site', 'change_theme' );
+						page( `/themes/${ siteSlug }` );
+					} }
+					label={ translate( 'Change theme' ) }
+					iconSrc={ themeIcon }
+				/>
+				<ActionBox
+					href="https://wp.me/logo-maker"
+					onClick={ () => trackAction( 'my_site', 'design_logo' ) }
+					target="_blank"
+					label={ translate( 'Design a logo' ) }
+					iconSrc={ logoIcon }
+				/>
+				{ hasCustomDomain ? (
+					<ActionBox
+						onClick={ () => {
+							trackAction( 'my_site', 'add_email' );
+							page( `/email/${ siteSlug }` );
+						} }
+						label={ translate( 'Add email' ) }
+						iconSrc={ gSuiteIcon }
+					/>
+				) : (
+					<ActionBox
+						onClick={ () => {
+							trackAction( 'my_site', 'add_domain' );
+							page( `/domains/add/${ siteSlug }` );
+						} }
+						label={ translate( 'Add a domain' ) }
+						iconSrc={ customDomainIcon }
+					/>
+				) }
+			</div>
 		);
-	};
+		if ( displayChecklist ) {
+			return null;
+		}
+		return (
+			<>
+				{ ! isMobile() ? (
+					<Card className="customer-home__card-boxes">
+						<CardHeading>{ translate( 'Quick Links' ) }</CardHeading>
+						{ quickLinks }
+					</Card>
+				) : (
+					<FoldableCard
+						className="customer-home__card-boxes card-heading-21"
+						header={ translate( 'Quick Links' ) }
+						expanded
+					>
+						{ quickLinks }
+					</FoldableCard>
+				) }
+			</>
+		);
+	}
 
 	renderCustomerHome = () => {
 		const {
@@ -379,22 +495,13 @@ class Home extends Component {
 			isChecklistComplete,
 			needsEmailVerification,
 			translate,
-			customizeUrl,
 			checklistMode,
-			menusUrl,
-			site,
 			siteSlug,
 			trackAction,
 			expandToolsAndTrack,
-			isStaticHomePage,
-			staticHomePageId,
-			showCustomizer,
-			hasCustomDomain,
 			hasChecklistData,
 			siteIsUnlaunched,
 		} = this.props;
-		const editHomePageUrl =
-			isStaticHomePage && `/block-editor/page/${ siteSlug }/${ staticHomePageId }`;
 
 		if ( ! hasChecklistData ) {
 			return <div className="customer-home__loading-placeholder"></div>;
@@ -407,104 +514,16 @@ class Home extends Component {
 				<div className="customer-home__layout-col customer-home__layout-col-left">
 					{ // "Go Mobile" has the highest priority placement when viewed in smaller viewports, so folks
 					// can see it on their phone without needing to scroll.
-					isMobile() && this.renderGoMobile() }
-					{ displayChecklist ? (
+					isMobile() && <GoMobileCard /> }
+					{ displayChecklist && (
 						<>
 							<Card className="customer-home__card-checklist-heading">
 								<CardHeading>{ translate( 'Site Setup List' ) }</CardHeading>
 							</Card>
 							<WpcomChecklist displayMode={ checklistMode } />
 						</>
-					) : (
-						<Card className="customer-home__card-boxes">
-							<CardHeading>{ translate( 'Site Tools' ) }</CardHeading>
-							<div className="customer-home__boxes">
-								<ActionBox
-									onClick={ () => {
-										trackAction( 'my_site', 'add_page' );
-										page( `/page/${ siteSlug }` );
-									} }
-									label={ translate( 'Add a page' ) }
-									iconSrc={ pageIcon }
-								/>
-								{ isStaticHomePage ? (
-									<ActionBox
-										onClick={ () => {
-											trackAction( 'my_site', 'write_post' );
-											page( `/post/${ siteSlug }` );
-										} }
-										label={ translate( 'Write blog post' ) }
-										iconSrc={ postIcon }
-									/>
-								) : (
-									<ActionBox
-										onClick={ () => {
-											trackAction( 'my_site', 'manage_comments' );
-											page( `/comments/${ siteSlug }` );
-										} }
-										label={ translate( 'Manage comments' ) }
-										iconSrc={ commentIcon }
-									/>
-								) }
-								{ showCustomizer && (
-									<ActionBox
-										href={ customizeUrl }
-										onClick={ () => trackAction( 'my_site', 'customize_theme' ) }
-										label={ translate( 'Customize theme' ) }
-										iconSrc={ customizeIcon }
-									/>
-								) }
-								<ActionBox
-									onClick={ () => {
-										trackAction( 'my_site', 'change_theme' );
-										page( `/themes/${ siteSlug }` );
-									} }
-									label={ translate( 'Change theme' ) }
-									iconSrc={ themeIcon }
-								/>
-								{ showCustomizer && (
-									<ActionBox
-										href={ menusUrl }
-										onClick={ () => trackAction( 'my_site', 'edit_menus' ) }
-										label={ translate( 'Edit menus' ) }
-										iconSrc={ menuIcon }
-									/>
-								) }
-								<ActionBox
-									href={ `/media/${ siteSlug }` }
-									onClick={ () => trackAction( 'my_site', 'change_images' ) }
-									label={ translate( 'Change images' ) }
-									iconSrc={ imagesIcon }
-								/>
-								<ActionBox
-									href="https://wp.me/logo-maker"
-									onClick={ () => trackAction( 'my_site', 'design_logo' ) }
-									target="_blank"
-									label={ translate( 'Design a logo' ) }
-									iconSrc={ logoIcon }
-								/>
-								{ hasCustomDomain ? (
-									<ActionBox
-										onClick={ () => {
-											trackAction( 'my_site', 'add_email' );
-											page( `/email/${ siteSlug }` );
-										} }
-										label={ translate( 'Add email' ) }
-										iconSrc={ gSuiteIcon }
-									/>
-								) : (
-									<ActionBox
-										onClick={ () => {
-											trackAction( 'my_site', 'add_domain' );
-											page( `/domains/add/${ siteSlug }` );
-										} }
-										label={ translate( 'Add a domain' ) }
-										iconSrc={ customDomainIcon }
-									/>
-								) }
-							</div>
-						</Card>
 					) }
+					{ this.renderQuickLinks() }
 				</div>
 				<div className="customer-home__layout-col customer-home__layout-col-right">
 					{ siteIsUnlaunched && ! needsEmailVerification && (
@@ -523,43 +542,8 @@ class Home extends Component {
 							</Button>
 						</Card>
 					) }
-					{ ! siteIsUnlaunched && (
-						<Card>
-							<CardHeading>{ translate( 'My Site' ) }</CardHeading>
-							<h6 className="customer-home__card-subheader">
-								{ translate( 'Make changes to your site or view its current state' ) }
-							</h6>
-							<div className="customer-home__card-col">
-								<div className="customer-home__card-col-left">
-									{ isStaticHomePage ? (
-										<Button
-											href={ editHomePageUrl }
-											primary={ isPrimary }
-											onClick={ () => trackAction( 'my_site', 'edit_homepage' ) }
-										>
-											{ translate( 'Edit Homepage' ) }
-										</Button>
-									) : (
-										<Button
-											href={ `/post/${ siteSlug }` }
-											primary={ isPrimary }
-											onClick={ () => {
-												trackAction( 'my_site', 'write_post' );
-											} }
-										>
-											{ translate( 'Write Blog Post' ) }
-										</Button>
-									) }
-								</div>
-								<div className="customer-home__card-col-right">
-									<Button href={ site.URL } onClick={ () => trackAction( 'my_site', 'view_site' ) }>
-										{ translate( 'View Site' ) }
-									</Button>
-								</div>
-							</div>
-						</Card>
-					) }
-					{ ! siteIsUnlaunched && (
+					{ ! siteIsUnlaunched && <StatsCard /> }
+					{ ! siteIsUnlaunched && isChecklistComplete && (
 						<Card className="customer-home__grow-earn">
 							<CardHeading>{ translate( 'Grow & Earn' ) }</CardHeading>
 							<h6 className="customer-home__card-subheader">
@@ -613,7 +597,7 @@ class Home extends Component {
 						</div>
 					</Card>
 					{ // "Go Mobile" has the lowest priority placement when viewed in bigger viewports.
-					isDesktop() && this.renderGoMobile() }
+					! isMobile() && <GoMobileCard /> }
 				</div>
 			</div>
 		);
@@ -638,7 +622,8 @@ const connectHome = connect(
 		const createdAt = getSiteOption( state, siteId, 'created_at' );
 
 		return {
-			displayChecklist: !! ( ! isAtomic && hasChecklistData && ! isChecklistComplete ),
+			displayChecklist:
+				isEligibleForDotcomChecklist( state, siteId ) && hasChecklistData && ! isChecklistComplete,
 			site: getSelectedSite( state ),
 			siteId,
 			siteSlug: getSelectedSiteSlug( state ),

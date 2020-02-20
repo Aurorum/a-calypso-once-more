@@ -1,4 +1,10 @@
 /**
+ * External dependencies
+ */
+import { kebabCase } from 'lodash';
+import debugFactory from 'debug';
+
+/**
  * Internal dependencies
  */
 import { once } from 'lib/memoize-last';
@@ -10,14 +16,51 @@ import {
 	activate as activateBypass,
 } from './bypass';
 import { StoredItems } from './types';
+import { mc } from 'lib/analytics';
+import config from 'config';
+
+const debug = debugFactory( 'calypso:browser-storage' );
 
 let shouldBypass = false;
+let shouldDisableIDB = false;
 
 const DB_NAME = 'calypso';
 const DB_VERSION = 2; // Match versioning of the previous localforage-based implementation.
 const STORE_NAME = 'calypso_store';
 
 const SANITY_TEST_KEY = 'browser-storage-sanity-test';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const isAffectedSafari =
+	config.isEnabled( 'safari-idb-mitigation' ) &&
+	typeof window !== 'undefined' &&
+	!! window.IDBKeyRange?.lowerBound( 0 ).includes &&
+	!! ( window as any ).webkitAudioContext &&
+	!! window.PointerEvent;
+
+debug( 'Safari IDB mitigation active: %s', isAffectedSafari );
+
+export const supportsIDB = once( async () => {
+	if ( typeof window === 'undefined' || ! window.indexedDB ) {
+		debug( 'IDB not found in host' );
+		return false;
+	}
+
+	if ( shouldDisableIDB ) {
+		debug( 'IDB disabled' );
+		return false;
+	}
+
+	try {
+		const testValue = Date.now().toString();
+		await idbSet( SANITY_TEST_KEY, testValue );
+		await idbGet( SANITY_TEST_KEY );
+		return true;
+	} catch ( error ) {
+		// IDB sanity test failed. Fall back to alternative method.
+		return false;
+	}
+} );
 
 const getDB = once( () => {
 	const request = window.indexedDB.open( DB_NAME, DB_VERSION );
@@ -32,29 +75,38 @@ const getDB = once( () => {
 					}
 					reject( request.error );
 				};
-				request.onsuccess = () => resolve( request.result );
+				request.onsuccess = () => {
+					const db = request.result;
+
+					// Add a general error handler for any future requests made against this db handle.
+					// See https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB#Handling_Errors for
+					// more information on how error events bubble with IndexedDB
+					db.onerror = function( errorEvent: any ) {
+						debug( 'IDB Error', errorEvent );
+						if ( errorEvent.target?.error?.name ) {
+							mc.bumpStat( 'calypso-browser-storage', kebabCase( errorEvent.target.error.name ) );
+
+							if ( errorEvent.target.error.name === 'QuotaExceededError' ) {
+								// we've blown through the quota. Turn off IDB for this page load
+								shouldDisableIDB = true;
+								supportsIDB.clear();
+								debug( 'disabling IDB because we saw a QuotaExceededError' );
+							}
+						}
+					};
+					db.onversionchange = () => {
+						// This fires when the database gets upgraded or when it gets deleted.
+						// We need to close our handle to allow the change to proceed
+						db.close();
+					};
+					resolve( db );
+				};
 				request.onupgradeneeded = () => request.result.createObjectStore( STORE_NAME );
 			}
 		} catch ( error ) {
 			reject( error );
 		}
 	} );
-} );
-
-export const supportsIDB = once( async () => {
-	if ( typeof window === 'undefined' || ! window.indexedDB ) {
-		return false;
-	}
-
-	try {
-		const testValue = Date.now().toString();
-		await idbSet( SANITY_TEST_KEY, testValue );
-		await idbGet( SANITY_TEST_KEY );
-		return true;
-	} catch ( error ) {
-		// IDB sanity test failed. Fall back to alternative method.
-		return false;
-	}
 } );
 
 function idbGet< T >( key: string ): Promise< T | undefined > {
@@ -112,10 +164,22 @@ function idbGetAll( pattern?: RegExp ): Promise< StoredItems > {
 	);
 }
 
-function idbSet< T >( key: string, value: T ): Promise< void > {
+let idbWriteCount = 0;
+let idbWriteBlock: Promise< void > | null = null;
+async function idbSet< T >( key: string, value: T ): Promise< void > {
+	// if there's a write lock, wait on it
+	if ( idbWriteBlock ) {
+		await idbWriteBlock;
+	}
+	// if we're on safari 13, we need to clear out the object store every
+	// so many writes to make sure we don't chew up the transaction log
+	if ( isAffectedSafari && ++idbWriteCount % 20 === 0 ) {
+		await idbSafariReset();
+	}
+
 	return new Promise( ( resolve, reject ) => {
 		getDB()
-			.then( db => {
+			.then( async db => {
 				const transaction = db.transaction( STORE_NAME, 'readwrite' );
 				transaction.objectStore( STORE_NAME ).put( value, key );
 
@@ -145,6 +209,56 @@ function idbClear(): Promise< void > {
 				transaction.onerror = error;
 			} )
 			.catch( err => reject( err ) );
+	} );
+}
+
+function idbRemove(): Promise< void > {
+	return new Promise( ( resolve, reject ) => {
+		const deleteRequest = window.indexedDB.deleteDatabase( DB_NAME );
+		deleteRequest.onsuccess = () => {
+			getDB.clear();
+			resolve();
+		};
+		deleteRequest.onerror = event => reject( event );
+	} );
+}
+
+async function idbSafariReset() {
+	if ( idbWriteBlock ) {
+		return idbWriteBlock;
+	}
+	debug( 'performing safari idb mitigation' );
+	idbWriteBlock = _idbSafariReset();
+	idbWriteBlock.finally( () => {
+		idbWriteBlock = null;
+		debug( 'idb mitigation complete' );
+	} );
+	return idbWriteBlock;
+}
+
+async function _idbSafariReset(): Promise< void > {
+	const items = await idbGetAll();
+
+	await idbRemove();
+
+	return new Promise( ( resolve, reject ) => {
+		getDB().then(
+			db => {
+				const transaction = db.transaction( STORE_NAME, 'readwrite' );
+				const oStore = transaction.objectStore( STORE_NAME );
+				// eslint-disable-next-line prefer-const
+				for ( let [ key, value ] of Object.entries( items ) ) {
+					oStore.put( value, key );
+				}
+				const success = () => resolve();
+				const error = () => reject( transaction.error );
+
+				transaction.oncomplete = success;
+				transaction.onabort = error;
+				transaction.onerror = error;
+			},
+			err => reject( err )
+		);
 	} );
 }
 

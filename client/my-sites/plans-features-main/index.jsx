@@ -7,7 +7,6 @@ import { localize } from 'i18n-calypso';
 import { get } from 'lodash';
 import classNames from 'classnames';
 import { connect } from 'react-redux';
-import cookie from 'cookie';
 
 /**
  * Internal dependencies
@@ -32,7 +31,7 @@ import {
 import {
 	JETPACK_BACKUP_PRODUCTS,
 	JETPACK_PRODUCT_PRICE_MATRIX,
-	JETPACK_PRODUCTS,
+	getJetpackProducts,
 } from 'lib/products-values/constants';
 import { addQueryArgs } from 'lib/url';
 import JetpackFAQ from './jetpack-faq';
@@ -65,14 +64,12 @@ import { getDomainsBySiteId } from 'state/sites/domains/selectors';
 import {
 	getSitePlan,
 	getSiteSlug,
-	isJetpackMinimumVersion,
 	isJetpackSite,
 	isJetpackSiteMultiSite,
 } from 'state/sites/selectors';
 import { getTld } from 'lib/domains';
 import { isDiscountActive } from 'state/selectors/get-active-discount.js';
 import { selectSiteId as selectHappychatSiteId } from 'state/help/actions';
-import { abtest } from 'lib/abtest';
 
 /**
  * Style dependencies
@@ -96,7 +93,7 @@ export class PlansFeaturesMain extends Component {
 	}
 
 	isJetpackBackupAvailable() {
-		const { displayJetpackPlans, isMultisite, jetpackSupportsBackupProducts, siteId } = this.props;
+		const { displayJetpackPlans, isMultisite } = this.props;
 
 		// Jetpack Backup does not support Multisite yet.
 		if ( isMultisite ) {
@@ -108,18 +105,12 @@ export class PlansFeaturesMain extends Component {
 			return false;
 		}
 
-		// Only for sites with Jetpack >= 7.9alpha
-		if ( siteId && ! jetpackSupportsBackupProducts ) {
-			return false;
-		}
-
 		return true;
 	}
 
 	getPlanFeatures() {
 		const {
 			basePlansPath,
-			countryCode,
 			customerType,
 			disableBloggerPlanWithNonBlogDomain,
 			displayJetpackPlans,
@@ -183,12 +174,8 @@ export class PlansFeaturesMain extends Component {
 					discountEndDate={ discountEndDate }
 					withScroll={ plansWithScroll }
 					popularPlanSpec={ getPopularPlanSpec( {
-						abtest,
 						customerType,
 						isJetpack,
-						isInSignup,
-						isLaunchPage,
-						countryCode,
 					} ) }
 					siteId={ siteId }
 				/>
@@ -441,6 +428,7 @@ export class PlansFeaturesMain extends Component {
 		}
 
 		const { basePlansPath, intervalType, redirectTo } = this.props;
+		const jetpackProducts = getJetpackProducts();
 
 		return (
 			<div className="plans-features-main__group is-narrow">
@@ -452,7 +440,7 @@ export class PlansFeaturesMain extends Component {
 					products={ JETPACK_BACKUP_PRODUCTS }
 				/>
 				<ProductSelector
-					products={ JETPACK_PRODUCTS }
+					products={ jetpackProducts }
 					intervalType={ intervalType }
 					basePlansPath={ basePlansPath }
 					productPriceMatrix={ JETPACK_PRODUCT_PRICE_MATRIX }
@@ -547,12 +535,6 @@ export default connect(
 			currentPlan,
 		} );
 
-		const isDevelopment = 'development' === process.env.NODE_ENV;
-		const devCountryCode = isDevelopment && global.window && global.window.userCountryCode;
-		const cookies = cookie.parse( document.cookie );
-		const countryCodeFromCookie = cookies.country_code;
-		const countryCode = devCountryCode || countryCodeFromCookie;
-
 		return {
 			// This is essentially a hack - discounts are the only endpoint that we can rely on both on /plans and
 			// during the signup, and we're going to remove the code soon after the test. Also, since this endpoint is
@@ -565,11 +547,9 @@ export default connect(
 			isChatAvailable: isHappychatAvailable( state ),
 			isJetpack: isJetpackSite( state, siteId ),
 			isMultisite: isJetpackSiteMultiSite( state, siteId ),
-			jetpackSupportsBackupProducts: isJetpackMinimumVersion( state, siteId, '7.9-alpha' ),
 			siteId,
 			siteSlug: getSiteSlug( state, get( props.site, [ 'ID' ] ) ),
 			sitePlanSlug: currentPlan && currentPlan.product_slug,
-			countryCode,
 		};
 	},
 	{

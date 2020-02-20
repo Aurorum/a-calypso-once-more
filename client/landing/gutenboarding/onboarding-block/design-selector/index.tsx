@@ -10,6 +10,8 @@ import { partition } from 'lodash';
 import { Portal } from 'reakit/Portal';
 import { useDialogState, Dialog, DialogBackdrop } from 'reakit/Dialog';
 import { useSpring, animated } from 'react-spring';
+import { useHistory } from 'react-router-dom';
+import { Step, usePath } from '../../path';
 
 /**
  * Internal dependencies
@@ -24,7 +26,11 @@ type Template = VerticalsTemplates.Template;
 
 const VERTICALS_TEMPLATES_STORE = VerticalsTemplates.register();
 
-const DesignSelector: FunctionComponent = () => {
+interface Props {
+	showPageSelector?: boolean;
+}
+
+const DesignSelector: FunctionComponent< Props > = ( { showPageSelector = false } ) => {
 	const { selectedDesign, siteVertical } = useSelect( select =>
 		select( ONBOARD_STORE ).getState()
 	);
@@ -47,12 +53,6 @@ const DesignSelector: FunctionComponent = () => {
 		( { category } ) => category === 'home'
 	);
 
-	const resetState = () => {
-		setSelectedDesign( undefined );
-	};
-
-	const hasSelectedDesign = !! selectedDesign;
-
 	const headingContainer = useRef< HTMLDivElement >( null );
 	const selectionTransitionShift = useRef< number >( 0 );
 	useLayoutEffect( () => {
@@ -72,30 +72,33 @@ const DesignSelector: FunctionComponent = () => {
 
 	const designSelectorSpring = useSpring( {
 		transform: `translate3d( 0, ${
-			hasSelectedDesign ? -selectionTransitionShift.current : 0
+			showPageSelector ? -selectionTransitionShift.current : 0
 		}px, 0 )`,
 	} );
 
 	const descriptionContainerSpring = useSpring( {
-		transform: `translate3d( 0, ${ hasSelectedDesign ? '0' : '100vh' }, 0 )`,
-		visibility: hasSelectedDesign ? 'visible' : 'hidden',
+		transform: `translate3d( 0, ${ showPageSelector ? '0' : '100vh' }, 0 )`,
+		visibility: showPageSelector ? 'visible' : 'hidden',
 	} );
 
 	const pageSelectorSpring = useSpring( {
-		transform: `translate3d( 0, ${ hasSelectedDesign ? '0' : '100vh' }, 0 )`,
+		transform: `translate3d( 0, ${ showPageSelector ? '0' : '100vh' }, 0 )`,
 		onStart: () => {
-			hasSelectedDesign && dialog.show();
+			showPageSelector && dialog.show();
 		},
 		onRest: () => {
-			! hasSelectedDesign && dialog.hide();
+			! showPageSelector && dialog.hide();
 		},
 	} );
+
+	const history = useHistory();
+	const makePath = usePath();
 
 	return (
 		<animated.div style={ designSelectorSpring }>
 			<div
 				className="design-selector__header-container"
-				aria-hidden={ hasSelectedDesign ? 'true' : undefined }
+				aria-hidden={ showPageSelector ? 'true' : undefined }
 				ref={ headingContainer }
 			>
 				<h1 className="design-selector__title">
@@ -107,7 +110,7 @@ const DesignSelector: FunctionComponent = () => {
 			</div>
 			<div
 				className={ classnames( 'design-selector__grid-container', {
-					'has-selected-design': hasSelectedDesign,
+					'is-page-selector-open': showPageSelector,
 				} ) }
 			>
 				<div className="design-selector__grid">
@@ -123,12 +126,13 @@ const DesignSelector: FunctionComponent = () => {
 											gridColumn: descriptionOnRight ? 1 : 2,
 									  }
 									: {
-											visibility: hasSelectedDesign ? 'hidden' : undefined,
+											visibility: showPageSelector ? 'hidden' : undefined,
 									  }
 							}
 							onClick={ () => {
 								window.scrollTo( 0, 0 );
 								setSelectedDesign( design );
+								history.push( makePath( Step.PageSelection ) );
 							} }
 						/>
 					) ) }
@@ -152,14 +156,16 @@ const DesignSelector: FunctionComponent = () => {
 
 			<Portal>
 				<DialogBackdrop
-					visible={ hasSelectedDesign }
+					visible={ showPageSelector }
 					className="design-selector__page-layout-backdrop"
 				/>
 			</Portal>
 
 			<Dialog
 				{ ...dialog }
-				hide={ resetState }
+				hide={ () => {
+					history.push( makePath( Step.DesignSelection ) );
+				} }
 				aria-labelledby="page-layout-selector__title"
 				hideOnClickOutside
 				hideOnEsc

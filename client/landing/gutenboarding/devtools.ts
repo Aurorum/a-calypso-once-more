@@ -14,9 +14,9 @@ export const setupWpDataDebug = () => {
 			if ( ! window.wp.data ) {
 				window.wp.data = require( '@wordpress/data' );
 
-				const { User } = require( '@automattic/data-stores' );
 				const config = require( 'config' ).default;
-				User.register( {
+				const { Site } = require( '@automattic/data-stores' );
+				Site.register( {
 					client_id: config( 'wpcom_signup_id' ),
 					client_secret: config( 'wpcom_signup_key' ),
 				} );

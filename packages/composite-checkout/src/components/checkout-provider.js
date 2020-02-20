@@ -44,18 +44,24 @@ export const CheckoutProvider = props => {
 	const [ paymentMethodId, setPaymentMethodId ] = useState(
 		paymentMethods?.length ? paymentMethods[ 0 ].id : null
 	);
+	const [ prevPaymentMethods, setPrevPaymentMethods ] = useState( [] );
 	useEffect( () => {
-		debug( 'paymentMethods changed; setting payment method to first of', paymentMethods );
-		setPaymentMethodId( paymentMethods?.length ? paymentMethods[ 0 ].id : null );
-	}, [ paymentMethods ] );
+		if ( paymentMethods.length !== prevPaymentMethods.length ) {
+			debug( 'paymentMethods changed; setting payment method to first of', paymentMethods );
+			setPaymentMethodId( paymentMethods?.length ? paymentMethods[ 0 ].id : null );
+			setPrevPaymentMethods( paymentMethods );
+		}
+	}, [ paymentMethods, prevPaymentMethods ] );
 
 	const [ formStatus, setFormStatus ] = useFormStatusManager( isLoading );
+	const didCallOnPaymentComplete = useRef( false );
 	useEffect( () => {
-		if ( formStatus === 'complete' ) {
+		if ( formStatus === 'complete' && ! didCallOnPaymentComplete.current ) {
 			debug( "form status is complete so I'm calling onPaymentComplete" );
-			onPaymentComplete();
+			didCallOnPaymentComplete.current = true;
+			onPaymentComplete( { paymentMethodId } );
 		}
-	}, [ formStatus, onPaymentComplete ] );
+	}, [ formStatus, onPaymentComplete, paymentMethodId ] );
 
 	// Remove undefined and duplicate checkoutWrapper properties
 	const wrappers = [

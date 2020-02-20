@@ -19,11 +19,27 @@ import getSites from 'state/selectors/get-sites';
 import getPrimarySiteId from 'state/selectors/get-primary-site-id';
 import getPrimarySiteSlug from 'state/selectors/get-primary-site-slug';
 import { clickUpgradeNudge } from 'state/marketing/actions';
+import UpsellNudge from 'blocks/upsell-nudge';
 import { abtest } from 'lib/abtest';
 
 const debug = debugFactory( 'calypso:reader:sidebar-nudges' );
 
 function renderFreeToPaidPlanNudge( { siteId, siteSlug, translate }, dispatch ) {
+	if ( abtest( 'sidebarUpsellNudgeUnification' ) === 'variantShowUnifiedUpsells' ) {
+		return (
+			<UpsellNudge
+				event={ 'free-to-paid-sidebar-reader' }
+				callToAction={ translate( 'Upgrade' ) }
+				compact
+				href={ '/plans/' + siteSlug }
+				title={ translate( 'Free domain with a plan' ) }
+				onClick={ () => dispatch( clickUpgradeNudge( siteId ) ) }
+				tracksClickName={ 'calypso_upgrade_nudge_cta_click' }
+				tracksImpressionName={ 'calypso_upgrade_nudge_impression' }
+			/>
+		);
+	}
+
 	return (
 		<SidebarBanner
 			ctaName={ 'free-to-paid-sidebar-reader' }
@@ -55,6 +71,7 @@ function mapStateToProps( state ) {
 	const devCountryCode = isDevelopment && global.window && global.window.userCountryCode;
 	const countryCode = devCountryCode || getCurrentUserCountryCode( state );
 	const userLocale = getLocaleSlug( state );
+	const isEnglish = [ 'en', 'en-gb' ].indexOf( userLocale ) !== -1;
 
 	isDevelopment &&
 		debug(
@@ -73,9 +90,9 @@ function mapStateToProps( state ) {
 			! isJetpackSite( state, siteId ) && // not for Jetpack sites
 			! isDomainOnlySite( state, siteId ) && // not for domain only sites
 			isEligibleForFreeToPaidUpsell( state, siteId ) &&
-			// This test is not for English speaking US residents.
-			( ( 'en' === userLocale && 'US' === countryCode ) ||
-				'display' === abtest( 'readerFreeToPaidPlanNudge' ) ),
+			// This nudge only shows up to US EN users.
+			isEnglish &&
+			'US' === countryCode,
 	};
 }
 

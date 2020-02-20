@@ -4,7 +4,7 @@
 import '@automattic/calypso-polyfills';
 import React from 'react';
 import ReactDom from 'react-dom';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Route, Switch, Redirect, generatePath } from 'react-router-dom';
 import config from '../../config';
 
 /**
@@ -12,6 +12,8 @@ import config from '../../config';
  */
 import { Gutenboard } from './gutenboard';
 import { setupWpDataDebug } from './devtools';
+import accessibleFocus from 'lib/accessible-focus';
+import { path, Step } from './path';
 
 /**
  * Style dependencies
@@ -25,9 +27,19 @@ window.AppBoot = () => {
 	} else {
 		setupWpDataDebug();
 
+		// Add accessible-focus listener.
+		accessibleFocus();
+
 		ReactDom.render(
 			<BrowserRouter basename="gutenboarding">
-				<Gutenboard />
+				<Switch>
+					<Route exact path={ path }>
+						<Gutenboard />
+					</Route>
+					<Route>
+						<Redirect to={ generatePath( path, { step: Step.IntentGathering } ) } />
+					</Route>
+				</Switch>
 			</BrowserRouter>,
 			document.getElementById( 'wpcom' )
 		);

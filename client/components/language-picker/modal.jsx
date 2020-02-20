@@ -11,7 +11,6 @@ import {
 	capitalize,
 	deburr,
 	find,
-	get,
 	includes,
 	isEmpty,
 	map,
@@ -25,6 +24,7 @@ import {
  * Internal dependencies
  */
 import { Dialog } from '@automattic/components';
+import QueryLanguageNames from 'components/data/query-language-names';
 import SectionNav from 'components/section-nav';
 import SectionNavTabs from 'components/section-nav/tabs';
 import SectionNavTabItem from 'components/section-nav/item';
@@ -105,12 +105,12 @@ export class LanguagePickerModal extends PureComponent {
 
 	getLocalizedLanguageTitle( languageSlug ) {
 		const { localizedLanguageNames } = this.props;
-		return get( localizedLanguageNames, `${ languageSlug }.localized`, languageSlug );
+		return localizedLanguageNames?.[ languageSlug ]?.localized ?? languageSlug;
 	}
 
 	getEnglishLanguageTitle( languageSlug ) {
 		const { localizedLanguageNames } = this.props;
-		return get( localizedLanguageNames, `${ languageSlug }.en`, languageSlug );
+		return localizedLanguageNames?.[ languageSlug ]?.en ?? languageSlug;
 	}
 
 	getFilterLabel( filter ) {
@@ -473,6 +473,7 @@ export class LanguagePickerModal extends PureComponent {
 				onClose={ this.handleClose }
 				additionalClassNames="language-picker__modal"
 			>
+				<QueryLanguageNames />
 				<SectionNav selectedText={ this.getFilterLabel( filter ) }>
 					<SectionNavTabs>{ this.renderTabItems() }</SectionNavTabs>
 					<Search

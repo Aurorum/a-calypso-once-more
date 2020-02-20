@@ -19,7 +19,17 @@ import {
 	WPOrderReviewSection,
 } from './wp-order-review-line-items';
 
-export default function WPCheckoutOrderReview( { className, removeItem, siteUrl } ) {
+export default function WPCheckoutOrderReview( {
+	className,
+	removeItem,
+	couponStatus,
+	couponFieldStateProps,
+	siteUrl,
+	variantRequestStatus,
+	variantSelectOverride,
+	getItemVariants,
+	onChangePlanLength,
+} ) {
 	const [ items, total ] = useLineItems();
 	const { formStatus } = useFormStatus();
 	const firstDomainItem = items.find( isLineItemADomain );
@@ -28,10 +38,22 @@ export default function WPCheckoutOrderReview( { className, removeItem, siteUrl 
 	return (
 		<div className={ joinClasses( [ className, 'checkout-review-order' ] ) }>
 			<WPOrderReviewSection>
-				<WPOrderReviewLineItems items={ items } removeItem={ removeItem } />
+				<WPOrderReviewLineItems
+					items={ items }
+					removeItem={ removeItem }
+					variantRequestStatus={ variantRequestStatus }
+					variantSelectOverride={ variantSelectOverride }
+					getItemVariants={ getItemVariants }
+					onChangePlanLength={ onChangePlanLength }
+				/>
 			</WPOrderReviewSection>
 
-			<CouponField id="order-review-coupon" disabled={ formStatus !== 'ready' } />
+			<CouponField
+				id="order-review-coupon"
+				disabled={ formStatus !== 'ready' }
+				couponStatus={ couponStatus }
+				couponFieldStateProps={ couponFieldStateProps }
+			/>
 
 			<WPOrderReviewSection>
 				<WPOrderReviewTotal total={ total } />
@@ -47,6 +69,8 @@ WPCheckoutOrderReview.propTypes = {
 	className: PropTypes.string,
 	removeItem: PropTypes.func.isRequired,
 	siteUrl: PropTypes.string,
+	getItemVariants: PropTypes.func,
+	onChangePlanLength: PropTypes.func,
 };
 
 const CouponField = styled( Coupon )`

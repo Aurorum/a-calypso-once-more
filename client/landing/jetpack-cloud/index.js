@@ -2,12 +2,12 @@
  * External dependencies
  */
 import config from '../../config';
-import page from 'page';
 
 /**
  * Internal dependencies
  */
 import initJetpackCloudRoutes from './routes';
+import { bootApp } from 'boot/common';
 
 /**
  * Style dependencies
@@ -20,7 +20,6 @@ window.AppBoot = () => {
 	if ( ! config.isEnabled( 'jetpack-cloud' ) ) {
 		window.location.href = '/';
 	} else {
-		initJetpackCloudRoutes( '/jetpack-cloud' );
-		page.start( { decodeURLComponents: false } );
+		bootApp( 'Jetpack Cloud', initJetpackCloudRoutes );
 	}
 };

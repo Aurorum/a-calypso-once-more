@@ -7,7 +7,12 @@ import { mapValues, omit, map } from 'lodash';
  * Internal dependencies
  */
 import ThemeQueryManager from 'lib/query-manager/theme';
-import { combineReducers, withSchemaValidation, withoutPersistence } from 'state/utils';
+import {
+	combineReducers,
+	withSchemaValidation,
+	withStorageKey,
+	withoutPersistence,
+} from 'state/utils';
 import {
 	ACTIVE_THEME_REQUEST,
 	ACTIVE_THEME_REQUEST_SUCCESS,
@@ -34,6 +39,9 @@ import {
 	THEMES_REQUEST_FAILURE,
 	THEME_PREVIEW_OPTIONS,
 	THEME_PREVIEW_STATE,
+	THEME_SHOW_AUTO_LOADING_HOMEPAGE_WARNING,
+	THEME_HIDE_AUTO_LOADING_HOMEPAGE_WARNING,
+	THEME_ACCEPT_AUTO_LOADING_HOMEPAGE_WARNING,
 } from 'state/action-types';
 import { getSerializedThemesQuery, getThemeIdFromStylesheet } from './utils';
 import {
@@ -436,15 +444,44 @@ export const themePreviewOptions = withoutPersistence( ( state = {}, action ) =>
  * Returns the updated previewing theme state
  * The state reflects if Theme Preview component should be visible or not.
  *
- * @param  {Bool}   state  Current state
+ * @param  {boolean}   state  Current state
  * @param  {object} action Action payload
- * @returns {Bool}          Updated state
+ * @returns {boolean}          Updated state
  */
 export const themePreviewVisibility = withoutPersistence( ( state = null, action ) => {
 	switch ( action.type ) {
 		case THEME_PREVIEW_STATE: {
 			const { themeId } = action;
 			return themeId;
+		}
+	}
+
+	return state;
+} );
+
+export const themeHasAutoLoadingHomepageWarning = withoutPersistence( ( state = null, action ) => {
+	switch ( action.type ) {
+		case THEME_SHOW_AUTO_LOADING_HOMEPAGE_WARNING: {
+			return {
+				themeId: action.themeId,
+				show: true,
+				accepted: false,
+			};
+		}
+
+		case THEME_ACCEPT_AUTO_LOADING_HOMEPAGE_WARNING: {
+			return {
+				themeId: action.themeId,
+				show: false,
+				accepted: true,
+			};
+		}
+
+		case THEME_ACTIVATE:
+		case THEME_ACTIVATE_SUCCESS:
+		case THEME_ACTIVATE_FAILURE:
+		case THEME_HIDE_AUTO_LOADING_HOMEPAGE_WARNING: {
+			return null;
 		}
 	}
 
@@ -483,7 +520,7 @@ export function recommendedThemes( state = { isLoading: true, themes: [] }, acti
 	return state;
 }
 
-export default combineReducers( {
+const combinedReducer = combineReducers( {
 	queries,
 	queryRequests,
 	queryRequestErrors,
@@ -501,4 +538,8 @@ export default combineReducers( {
 	themePreviewVisibility,
 	themeFilters,
 	recommendedThemes,
+	themeHasAutoLoadingHomepageWarning,
 } );
+const themesReducer = withStorageKey( 'themes', combinedReducer );
+
+export default themesReducer;

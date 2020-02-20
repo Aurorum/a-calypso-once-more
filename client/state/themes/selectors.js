@@ -1,7 +1,6 @@
 /**
  * External dependencies
  */
-
 import { find, includes, intersection, isEqual, omit, some, get, uniq, flatMap } from 'lodash';
 import i18n from 'i18n-calypso';
 import createSelector from 'lib/create-selector';
@@ -32,6 +31,8 @@ import {
 } from './utils';
 import { DEFAULT_THEME_QUERY } from './constants';
 import { FEATURE_UNLIMITED_PREMIUM_THEMES } from 'lib/plans/constants';
+
+import 'state/themes/init';
 
 /**
  * Returns a theme object by site ID, theme ID pair.
@@ -507,7 +508,6 @@ export function getThemeDemoUrl( state, themeId, siteId ) {
  *
  * @param  {object}  state   Global state tree
  * @param  {string}  themeId Theme ID
- * @param  {string}  siteId  Site ID
  * @returns {?string}         Theme forum URL
  */
 export function getThemeForumUrl( state, themeId ) {
@@ -728,8 +728,9 @@ export function getJetpackUpgradeUrlIfPremiumTheme( state, themeId, siteId ) {
 }
 
 /**
- * Returns the price string to display for a given theme on a given site:
- * @TODO Add tests!
+ * Returns the price string to display for a given theme on a given site.
+ *
+ * TODO Add tests!
  *
  * @param  {object}  state   Global state tree
  * @param  {string}  themeId Theme ID
@@ -769,4 +770,87 @@ export function isThemeGutenbergFirst( state, themeId ) {
 	const neededFeatures = [ 'global-styles', 'auto-loading-homepage' ];
 	// The theme should have a positive number of matching features to qualify.
 	return !! intersection( themeFeatures, neededFeatures ).length;
+}
+
+const emptyList = [];
+
+/**
+ * Gets the list of recommended themes.
+ *
+ * @param {object} state Global state tree
+ *
+ * @returns {Array} the list of recommended themes
+ */
+export function getRecommendedThemes( state ) {
+	return state.themes.recommendedThemes.themes || emptyList;
+}
+
+/**
+ * Returns whether the recommended themes list is loading.
+ *
+ * @param {object} state Global state tree
+ *
+ * @returns {boolean} whether the recommended themes list is loading
+ */
+export function areRecommendedThemesLoading( state ) {
+	return state.themes.recommendedThemes.isLoading;
+}
+
+/**
+ * Checks if a theme has auto loading homepage feature.
+ *
+ * @param {object} state   Global state tree
+ * @param {string} themeId An identifier for the theme
+ * @returns {boolean} True if the theme has auto loading homepage. Otherwise, False.
+ */
+export function themeHasAutoLoadingHomepage( state, themeId ) {
+	return includes(
+		getThemeTaxonomySlugs( getTheme( state, 'wpcom', themeId ), 'theme_feature' ),
+		'auto-loading-homepage'
+	);
+}
+
+/**
+ * Return the theme ID of the theme BEFORE to activated it.
+ * It allows getting the possibility to take action when it's needed.
+ * Specifically, it helps to show a modal when the theme to activate
+ * will change the homepage of the site, usually,
+ * this feature is included in First-Template Themes.
+ *
+ * @param {object} state   Global state tree
+ * @returns {string} Theme ID,
+ */
+export function getPreActivateThemeId( state ) {
+	return get( state.themes, [ 'themeHasAutoLoadingHomepageWarning', 'themeId' ] );
+}
+
+/**
+ * Returns whether the auto loading homepage modal should be shown
+ * before to start to install theme.
+ *
+ * @param {object} state   Global state tree
+ * @param {string} themeId Theme ID used to show the warning message before to activate.
+ * @returns {boolean}      True it should show the auto loading modal. Otherwise, False.
+ */
+export function shouldShowHomepageWarning( state, themeId ) {
+	return (
+		get( state.themes, [ 'themeHasAutoLoadingHomepageWarning', 'themeId' ] ) === themeId &&
+		get( state.themes, [ 'themeHasAutoLoadingHomepageWarning', 'show' ] )
+	);
+}
+
+/**
+ * Returns whether the auto loading homepage modal has been
+ * accepted by the user, which means that the theme
+ * will be activated.
+ *
+ * @param {object} state   Global state tree
+ * @param {string} themeId Theme ID to activate in the site.
+ * @returns {boolean}      True if the auto loading homepage dialog has been accepted. Otherwise, False.
+ */
+export function hasAutoLoadingHomepageModalAccepted( state, themeId ) {
+	return (
+		get( state.themes, [ 'themeHasAutoLoadingHomepageWarning', 'themeId' ] ) === themeId &&
+		get( state.themes, [ 'themeHasAutoLoadingHomepageWarning', 'accepted' ] )
+	);
 }

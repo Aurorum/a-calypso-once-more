@@ -6,7 +6,6 @@ import { connect } from 'react-redux';
 import classNames from 'classnames';
 import Gridicon from 'components/gridicon';
 import { flowRight, get, has } from 'lodash';
-import moment from 'moment-timezone';
 
 /**
  * Internal dependencies
@@ -33,6 +32,7 @@ import { FEATURE_NO_BRANDING, PLAN_BUSINESS } from 'lib/plans/constants';
 import QuerySiteSettings from 'components/data/query-site-settings';
 import { isJetpackSite, isCurrentPlanPaid } from 'state/sites/selectors';
 import { getSelectedSite, getSelectedSiteId, getSelectedSiteSlug } from 'state/ui/selectors';
+import guessTimezone from 'lib/i18n-utils/guess-timezone';
 import { preventWidows } from 'lib/formatting';
 import scrollTo from 'lib/scroll-to';
 import isUnlaunchedSite from 'state/selectors/is-unlaunched-site';
@@ -283,55 +283,60 @@ export class SiteSettingsFormGeneral extends Component {
 		const {
 			fields,
 			handleRadio,
+			updateFields,
 			isRequestingSettings,
 			eventTracker,
 			siteIsJetpack,
+			trackEvent,
 			translate,
 		} = this.props;
 
+		const currentValue = parseInt( fields.blog_public, 10 );
+
 		return (
 			<FormFieldset>
-				<FormLabel>
-					<FormRadio
-						name="blog_public"
-						value="1"
-						checked={ 1 === parseInt( fields.blog_public, 10 ) }
-						onChange={ handleRadio }
-						disabled={ isRequestingSettings }
-						onClick={ eventTracker( 'Clicked Site Visibility Radio Button' ) }
-					/>
-					<span>{ translate( 'Public' ) }</span>
-				</FormLabel>
+				{ ! siteIsJetpack && (
+					<FormLabel className="site-settings__visibility-label">
+						<FormRadio
+							name="blog_public"
+							value="1"
+							checked={ [ 0, 1 ].indexOf( currentValue ) !== -1 }
+							onChange={ handleRadio }
+							disabled={ isRequestingSettings }
+							onClick={ eventTracker( 'Clicked Site Visibility Radio Button' ) }
+						/>
+						<span>{ translate( 'Public' ) }</span>
+					</FormLabel>
+				) }
+
+				
 				<FormSettingExplanation isIndented>
-					{ translate(
-						'Your site is visible to everyone, and it may be indexed by search engines.'
-					) }
+					{ translate( 'Your site is visible to everyone.' ) }
 				</FormSettingExplanation>
 
-				<FormLabel>
-					<FormRadio
+				<FormLabel className="site-settings__visibility-label is-checkbox">
+					<FormInputCheckbox
 						name="blog_public"
 						value="0"
-						checked={ 0 === parseInt( fields.blog_public, 10 ) }
-						onChange={ handleRadio }
+						checked={ 0 === currentValue }
+						onChange={ () => {
+							const newValue = currentValue === 0 ? 1 : 0;
+							trackEvent( `Set blog_public to ${ newValue }` );
+							updateFields( { blog_public: newValue } );
+						} }
 						disabled={ isRequestingSettings }
 						onClick={ eventTracker( 'Clicked Site Visibility Radio Button' ) }
 					/>
-					<span>{ translate( 'Hidden' ) }</span>
+					<span>{ translate( 'Do not allow search engines to index my site' ) }</span>
 				</FormLabel>
-				<FormSettingExplanation isIndented>
-					{ translate(
-						'Your site is visible to everyone, but we ask search engines to not index your site.'
-					) }
-				</FormSettingExplanation>
 
 				{ ! siteIsJetpack && (
-					<div>
-						<FormLabel>
+					<>
+						<FormLabel className="site-settings__visibility-label">
 							<FormRadio
 								name="blog_public"
 								value="-1"
-								checked={ -1 === parseInt( fields.blog_public, 10 ) }
+								checked={ -1 === currentValue }
 								onChange={ handleRadio }
 								disabled={ isRequestingSettings }
 								onClick={ eventTracker( 'Clicked Site Visibility Radio Button' ) }
@@ -341,7 +346,7 @@ export class SiteSettingsFormGeneral extends Component {
 						<FormSettingExplanation isIndented>
 							{ translate( 'Your site is only visible to you and users you approve.' ) }
 						</FormSettingExplanation>
-					</div>
+					</>
 				) }
 			</FormFieldset>
 		);
@@ -429,7 +434,7 @@ export class SiteSettingsFormGeneral extends Component {
 							<FormRadio
 								name="blog_public"
 								value="-1"
-								checked={ -1 === blogPublic && 0 === wpcomComingSoon }
+								checked={ -1 === blogPublic && ! wpcomComingSoon }
 								onChange={ () =>
 									this.handleVisibilityOptionChange( {
 										blog_public: -1,
@@ -459,7 +464,7 @@ export class SiteSettingsFormGeneral extends Component {
 
 	Timezone() {
 		const { fields, isRequestingSettings, translate } = this.props;
-		const guessedTimezone = moment.tz.guess();
+		const guessedTimezone = guessTimezone();
 		const setGuessedTimezone = this.onTimezoneSelect.bind( this, guessedTimezone );
 
 		return (

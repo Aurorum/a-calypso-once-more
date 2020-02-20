@@ -6,11 +6,12 @@
  */
 import React from 'react';
 import { act } from 'react-dom/test-utils';
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
 import { Provider as ReduxProvider } from 'react-redux';
-import '@testing-library/jest-dom/extend-expect';
+import '@testing-library/jest-dom/extend-expect'; // eslint-disable-line import/no-extraneous-dependencies
 import { mockSetCartEndpoint, mockGetCartEndpointWith } from '@automattic/composite-checkout-wpcom';
-import { render } from '@testing-library/react';
+import { render } from '@testing-library/react'; // eslint-disable-line import/no-extraneous-dependencies
 
 /**
  * Internal dependencies
@@ -67,7 +68,7 @@ describe( 'CompositeCheckout', () => {
 				},
 			],
 			tax: {
-				display_taxes: false,
+				display_taxes: true,
 				location: {},
 			},
 			temporary: false,
@@ -76,12 +77,25 @@ describe( 'CompositeCheckout', () => {
 			total_tax_display: 'R$7',
 			total_cost_integer: 15600,
 			total_cost_display: 'R$156',
+			coupon_discounts_integer: [],
 		};
 
-		const store = createStore( () => ( {
-			plans: { items: [] },
-			sites: { items: {} },
-		} ) );
+		const countryList = [
+			{
+				code: 'AU',
+				name: 'Australia',
+			},
+		];
+
+		const store = applyMiddleware( thunk )( createStore )( () => {
+			return {
+				plans: { items: [] },
+				sites: { items: {} },
+				ui: { selectedSiteId: 123 },
+				productsList: { items: [] },
+				countries: { payments: countryList, domains: countryList },
+			};
+		} );
 
 		MyCheckout = () => (
 			<ReduxProvider store={ store }>
@@ -91,6 +105,7 @@ describe( 'CompositeCheckout', () => {
 					getCart={ mockGetCartEndpointWith( initialCart ) }
 					getStoredCards={ async () => [] }
 					allowedPaymentMethods={ [ 'paypal' ] }
+					overrideCountryList={ countryList }
 				/>
 			</ReduxProvider>
 		);
