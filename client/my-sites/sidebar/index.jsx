@@ -8,7 +8,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Gridicon from 'components/gridicon';
 import { format as formatUrl, parse as parseUrl } from 'url';
-import { memoize } from 'lodash';
+import { get, memoize } from 'lodash';
 
 /**
  * Internal dependencies
@@ -29,7 +29,9 @@ import ToolsMenu from './tools-menu';
 import { isFreeTrial, isPersonal, isPremium, isBusiness, isEcommerce } from 'lib/products-values';
 import { getCurrentUser } from 'state/current-user/selectors';
 import { getSelectedSiteId } from 'state/ui/selectors';
+import siteSupportsRealtimeBackup from 'state/selectors/site-supports-realtime-backup';
 import { isSidebarSectionOpen } from 'state/my-sites/sidebar/selectors';
+import getCurrentQueryArguments from 'state/selectors/get-current-query-arguments';
 import { setNextLayoutFocus, setLayoutFocus } from 'state/ui/layout-focus/actions';
 import canCurrentUser from 'state/selectors/can-current-user';
 import getPrimarySiteId from 'state/selectors/get-primary-site-id';
@@ -185,8 +187,35 @@ export class MySitesSidebar extends Component {
 		this.onNavigate();
 	};
 
+	backups() {
+		const { canUserViewActivity, isDisplayingRewind, isSiteAbletoRewind, siteId, path, translate, siteSuffix } = this.props;
+
+		if ( ! siteId ) {
+			return null;
+		}
+
+		if ( ! canUserViewActivity ) {
+			return null;
+		}
+		
+		if ( ! isSiteAbletoRewind ) {
+			return null;
+		}
+
+		const activityLink = '/activity-log' + siteSuffix + '?group=rewind';
+		return (
+			<SidebarItem
+				tipTarget="activity"
+				label={ translate( 'Backups' ) }
+				selected={ itemLinkMatches( [ '/activity-log' ], path ) && isDisplayingRewind }
+				link={ activityLink }
+				expandSection={ this.expandToolsSection }
+			/>
+		);
+	}
+
 	activity() {
-		const { siteId, canUserViewActivity, path, translate, siteSuffix } = this.props;
+		const { isDisplayingRewind, siteId, canUserViewActivity, path, translate, siteSuffix } = this.props;
 
 		if ( ! siteId ) {
 			return null;
@@ -201,7 +230,7 @@ export class MySitesSidebar extends Component {
 			<SidebarItem
 				tipTarget="activity"
 				label={ translate( 'Activity' ) }
-				selected={ itemLinkMatches( [ '/activity-log' ], path ) }
+				selected={ itemLinkMatches( [ '/activity-log' ], path ) && ! isDisplayingRewind }
 				link={ activityLink }
 				onNavigate={ this.trackActivityClick }
 				expandSection={ this.expandToolsSection }
@@ -675,7 +704,7 @@ export class MySitesSidebar extends Component {
 			return <SidebarMenu />;
 		}
 
-		const tools = !! this.tools() || !! this.marketing() || !! this.earn() || !! this.activity();
+		const tools = !! this.tools() || !! this.marketing() || !! this.earn() || !! this.backups() || !! this.activity();
 
 		return (
 			<div className="sidebar__menu-wrapper">
@@ -717,6 +746,7 @@ export class MySitesSidebar extends Component {
 					>
 						{ this.tools() }
 						{ this.marketing() }
+						{ this.backups() }
 						{ this.earn() }
 						{ this.activity() }
 					</ExpandableSidebarMenu>
@@ -794,6 +824,8 @@ function mapStateToProps( state ) {
 		isManageSectionOpen,
 		isAtomicSite: !! isSiteAutomatedTransfer( state, selectedSiteId ),
 		isMigrationInProgress: !! isSiteMigrationInProgress( state, selectedSiteId ),
+		isDisplayingRewind: 'rewind' === get( getCurrentQueryArguments( state ), 'group' ),
+		isSiteAbletoRewind: siteSupportsRealtimeBackup( state, siteId ),
 		isVip: isVipSite( state, selectedSiteId ),
 		showCustomizerLink: ! (
 			isSiteUsingFullSiteEditing( state, selectedSiteId ) ||
@@ -804,6 +836,7 @@ function mapStateToProps( state ) {
 		siteId,
 		site,
 		siteSuffix: site ? '/' + site.slug : '',
+		queryArgs: getCurrentQueryArguments( state ),
 		canViewAtomicHosting: canSiteViewAtomicHosting( state ),
 	};
 }
