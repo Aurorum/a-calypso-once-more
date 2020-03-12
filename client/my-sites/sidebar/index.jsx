@@ -8,7 +8,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Gridicon from 'components/gridicon';
 import { format as formatUrl, parse as parseUrl } from 'url';
-import { memoize } from 'lodash';
+import { get, memoize } from 'lodash';
 
 /**
  * Internal dependencies
@@ -35,8 +35,10 @@ import canCurrentUser from 'state/selectors/can-current-user';
 import getPrimarySiteId from 'state/selectors/get-primary-site-id';
 import hasJetpackSites from 'state/selectors/has-jetpack-sites';
 import isDomainOnlySite from 'state/selectors/is-domain-only-site';
+import getCurrentQueryArguments from 'state/selectors/get-current-query-arguments';
 import isSiteAutomatedTransfer from 'state/selectors/is-site-automated-transfer';
 import isSiteMigrationInProgress from 'state/selectors/is-site-migration-in-progress';
+import { siteHasBackupProductPurchase } from 'state/purchases/selectors';
 import {
 	getCustomizerUrl,
 	getSite,
@@ -48,6 +50,9 @@ import {
 import canCurrentUserUseCustomerHome from 'state/sites/selectors/can-current-user-use-customer-home';
 import canCurrentUserManagePlugins from 'state/selectors/can-current-user-manage-plugins';
 import { getStatsPathForTab } from 'lib/route';
+import isSiteOnFreePlan from 'state/selectors/is-site-on-free-plan';
+import siteSupportsRealtimeBackup from 'state/selectors/site-supports-realtime-backup';
+
 import { itemLinkMatches } from './utils';
 import { recordGoogleEvent, recordTracksEvent } from 'state/analytics/actions';
 import {
@@ -57,8 +62,6 @@ import {
 import { canCurrentUserUpgradeSite } from '../../state/sites/selectors';
 import isVipSite from 'state/selectors/is-vip-site';
 import isSiteUsingFullSiteEditing from 'state/selectors/is-site-using-full-site-editing';
-import isSiteUsingCoreSiteEditor from 'state/selectors/is-site-using-core-site-editor';
-import getSiteEditorUrl from 'state/selectors/get-site-editor-url';
 import {
 	SIDEBAR_SECTION_SITE,
 	SIDEBAR_SECTION_DESIGN,
@@ -139,7 +142,7 @@ export class MySitesSidebar extends Component {
 		/* eslint-disable wpcalypso/jsx-classname-namespace */
 		return (
 			<SidebarItem
-				tipTarget="stats"
+				tipTarget="menus"
 				label={ translate( 'Stats' ) }
 				className="stats"
 				selected={ itemLinkMatches(
@@ -171,11 +174,38 @@ export class MySitesSidebar extends Component {
 		return (
 			<SidebarItem
 				materialIcon="home"
-				tipTarget="myhome"
+				tipTarget="menus"
 				onNavigate={ this.trackCustomerHomeClick }
 				label={ translate( 'My Home' ) }
 				selected={ itemLinkMatches( [ '/home' ], path ) }
 				link={ '/home' + siteSuffix }
+			/>
+		);
+	}
+
+	backups() {
+		const { isSiteAbletoRewind, isRewinding, siteId, canUserViewActivity, path, translate, siteSuffix } = this.props;
+
+		if ( ! siteId ) {
+			return null;
+		}
+
+		if ( ! canUserViewActivity ) {
+			return null;
+		}
+		
+		if ( ! isSiteAbletoRewind ) {
+			return null;
+		}
+
+		const activityLink = '/activity-log' + siteSuffix + '?group=rewind';
+		return (
+			<SidebarItem
+				tipTarget="activity"
+				label={ translate( 'Backups' ) }
+				selected={ itemLinkMatches( [ '/activity-log' ], path ) && isRewinding }
+				link={ activityLink }
+				expandSection={ this.expandToolsSection }
 			/>
 		);
 	}
@@ -186,7 +216,7 @@ export class MySitesSidebar extends Component {
 	};
 
 	activity() {
-		const { siteId, canUserViewActivity, path, translate, siteSuffix } = this.props;
+		const { isRewinding, siteId, canUserViewActivity, path, translate, siteSuffix } = this.props;
 
 		if ( ! siteId ) {
 			return null;
@@ -201,7 +231,7 @@ export class MySitesSidebar extends Component {
 			<SidebarItem
 				tipTarget="activity"
 				label={ translate( 'Activity' ) }
-				selected={ itemLinkMatches( [ '/activity-log' ], path ) }
+				selected={ itemLinkMatches( [ '/activity-log' ], path ) && ! isRewinding }
 				link={ activityLink }
 				onNavigate={ this.trackActivityClick }
 				expandSection={ this.expandToolsSection }
@@ -267,14 +297,7 @@ export class MySitesSidebar extends Component {
 	}
 
 	design() {
-		const {
-				path,
-				site,
-				translate,
-				canUserEditThemeOptions,
-				showCustomizerLink,
-				showSiteEditor,
-			} = this.props,
+		const { path, site, translate, canUserEditThemeOptions, showCustomizerLink } = this.props,
 			jetpackEnabled = isEnabled( 'manage/themes-jetpack' );
 		let themesLink;
 
@@ -301,14 +324,6 @@ export class MySitesSidebar extends Component {
 						preloadSectionName="customize"
 						forceInternalLink
 						expandSection={ this.expandDesignSection }
-					/>
-				) }
-				{ showSiteEditor && (
-					<SidebarItem
-						label={ translate( 'Site Editor (beta)' ) }
-						link={ this.props.siteEditorUrl }
-						preloadSectionName="site editor"
-						forceInternalLink
 					/>
 				) }
 				<SidebarItem
@@ -675,7 +690,7 @@ export class MySitesSidebar extends Component {
 			return <SidebarMenu />;
 		}
 
-		const tools = !! this.tools() || !! this.marketing() || !! this.earn() || !! this.activity();
+		const tools = !! this.tools() || !! this.marketing() || !! this.earn() || !! this.backups() || !! this.activity();
 
 		return (
 			<div className="sidebar__menu-wrapper">
@@ -718,6 +733,7 @@ export class MySitesSidebar extends Component {
 						{ this.tools() }
 						{ this.marketing() }
 						{ this.earn() }
+						{ this.backups() }
 						{ this.activity() }
 					</ExpandableSidebarMenu>
 				) }
@@ -787,6 +803,8 @@ function mapStateToProps( state ) {
 		customizeUrl: getCustomizerUrl( state, selectedSiteId ),
 		hasJetpackSites: hasJetpackSites( state ),
 		isDomainOnly: isDomainOnlySite( state, selectedSiteId ),
+		isRewinding: 'rewind' === get( getCurrentQueryArguments( state ), 'group' ),
+		isSiteAbletoRewind: siteSupportsRealtimeBackup( state, siteId ),
 		isJetpack,
 		isSiteSectionOpen,
 		isDesignSectionOpen,
@@ -795,12 +813,7 @@ function mapStateToProps( state ) {
 		isAtomicSite: !! isSiteAutomatedTransfer( state, selectedSiteId ),
 		isMigrationInProgress: !! isSiteMigrationInProgress( state, selectedSiteId ),
 		isVip: isVipSite( state, selectedSiteId ),
-		showCustomizerLink: ! (
-			isSiteUsingFullSiteEditing( state, selectedSiteId ) ||
-			isSiteUsingCoreSiteEditor( state, selectedSiteId )
-		),
-		showSiteEditor: isSiteUsingCoreSiteEditor( state, selectedSiteId ),
-		siteEditorUrl: getSiteEditorUrl( state, selectedSiteId ),
+		showCustomizerLink: ! isSiteUsingFullSiteEditing( state, selectedSiteId ),
 		siteId,
 		site,
 		siteSuffix: site ? '/' + site.slug : '',
