@@ -7,12 +7,13 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { noop, flow } from 'lodash';
-import Gridicon from 'components/gridicon';
+import { localize } from 'i18n-calypso';
+import { Button, Card } from '@automattic/components';
 
 /**
  * Internal dependencies
  */
-import { Card } from '@automattic/components';
+import Gridicon from 'components/gridicon';
 import QueryPreferences from 'components/data/query-preferences';
 import { savePreference, setPreference } from 'state/preferences/actions';
 import { getPreference, hasReceivedRemotePreferences } from 'state/preferences/selectors';
@@ -27,6 +28,8 @@ const PREFERENCE_PREFIX = 'dismissible-card-';
 class DismissibleCard extends Component {
 	static propTypes = {
 		className: PropTypes.string,
+		buttonOnClick: PropTypes.func,
+		buttonText: PropTypes.string,
 		dismissCard: PropTypes.func,
 		isDismissed: PropTypes.bool,
 		temporary: PropTypes.bool,
@@ -39,7 +42,7 @@ class DismissibleCard extends Component {
 	};
 
 	render() {
-		const { className, isDismissed, onClick, dismissCard, hasReceivedPreferences } = this.props;
+		const { className, isDismissed, onClick, dismissCard, hasReceivedPreferences, buttonLink, buttonOnClick, buttonText, translate } = this.props;
 
 		if ( isDismissed || ! hasReceivedPreferences ) {
 			return null;
@@ -54,6 +57,10 @@ class DismissibleCard extends Component {
 					onClick={ flow( onClick, dismissCard ) }
 				/>
 				{ this.props.children }
+				<div className="dismissible-card__button-actions"> 
+					<Button className="dismissible-card__dismiss-link is-link">{ translate( 'Dismiss' ) }</Button>
+					<Button className="dismissible-card__main-button" href={ buttonLink } onClick={ flow( onClick, dismissCard ) }>{ buttonText }</Button>
+				</div>
 			</Card>
 		);
 	}
@@ -81,4 +88,4 @@ export default connect(
 			},
 			dispatch
 		)
-)( DismissibleCard );
+)( localize( DismissibleCard ) );
