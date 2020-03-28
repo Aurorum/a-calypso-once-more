@@ -17,6 +17,7 @@ import Main from 'components/main';
 import { preventWidows } from 'lib/formatting';
 import SidebarNavigation from 'my-sites/sidebar-navigation';
 import FormattedHeader from 'components/formatted-header';
+import ListEnd from 'components/list-end';
 import { getSelectedSite, getSelectedSiteId, getSelectedSiteSlug } from 'state/ui/selectors';
 import { canCurrentUserUseCustomerHome, getSiteOption } from 'state/sites/selectors';
 import PageViewTracker from 'lib/analytics/page-view-tracker';
@@ -144,6 +145,7 @@ class Home extends Component {
 					{ // "Go Mobile" has the lowest priority placement when viewed in bigger viewports.
 					! isMobile() && <GoMobile /> }
 				</div>
+				<ListEnd />
 			</div>
 		);
 	};
