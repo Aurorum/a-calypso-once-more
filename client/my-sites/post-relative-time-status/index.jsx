@@ -11,6 +11,7 @@ import { includes } from 'lodash';
  */
 import Gridicon from 'components/gridicon';
 import { withLocalizedMoment } from 'components/localized-moment';
+
 /**
  * Style dependencies
  */
