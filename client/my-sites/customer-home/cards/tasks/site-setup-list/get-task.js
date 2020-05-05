@@ -171,7 +171,7 @@ export const getTask = (
 				description: translate(
 					"Building an effective navigation menu makes it easier for someone to find what they're looking for and improve search engine rankings."
 				),
-				actionText: translate( 'View tutorial' ),
+				actionText: translate( 'Add a menu' ),
 				isSkippable: true,
 				actionDispatch: openSupportArticleDialog,
 				actionDispatchArgs: [
