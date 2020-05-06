@@ -16,7 +16,6 @@ import Webinars from 'my-sites/customer-home/cards/tasks/webinars';
 import FindDomain from 'my-sites/customer-home/cards/tasks/find-domain';
 import SiteSetupList from 'my-sites/customer-home/cards/tasks/site-setup-list';
 import { PerformanceTrackerStop } from 'lib/performance-tracking';
-import config from 'config';
 
 const cardComponents = {
 	'home-feature-go-mobile-phones': GoMobile,
@@ -31,12 +30,6 @@ const cardComponents = {
 };
 
 const Primary = ( { checklistMode, cards } ) => {
-	if ( ! config.isEnabled( 'home/experimental-layout' ) ) {
-		// Always ensure we have primary content.
-		if ( cards && cards.length < 1 ) {
-			cards = [ 'home-primary-quick-links' ];
-		}
-	}
 	return (
 		<>
 			{ cards &&
