@@ -21,6 +21,7 @@ import Gravatar from 'components/gravatar';
 import isJetpackSiteConnected from 'state/selectors/is-jetpack-site-connected';
 import isJetpackSiteInDevelopmentMode from 'state/selectors/is-jetpack-site-in-development-mode';
 import isJetpackUserMaster from 'state/selectors/is-jetpack-user-master';
+import getJetpackConnectionOwner from 'state/selectors/get-jetpack-connection-owner';
 import OwnershipInformation from './ownership-information';
 import QueryJetpackConnection from 'components/data/query-jetpack-connection';
 import QueryJetpackUserConnection from 'components/data/query-jetpack-user-connection';
@@ -156,7 +157,13 @@ class SiteOwnership extends Component {
 	}
 
 	renderConnectionDetails() {
-		const { siteIsConnected, siteIsInDevMode, translate, userIsMaster } = this.props;
+		const {
+			connectionOwner,
+			siteIsConnected,
+			siteIsInDevMode,
+			translate,
+			userIsMaster,
+		} = this.props;
 
 		if ( siteIsConnected === false ) {
 			return translate( 'The site is not connected.' );
@@ -178,7 +185,15 @@ class SiteOwnership extends Component {
 					<FormSettingExplanation>
 						{ userIsMaster
 							? translate( "You are the owner of this site's connection to WordPress.com." )
-							: translate( "Somebody else owns this site's connection to WordPress.com." ) }
+							: translate(
+									"{{strong}}%(connectionOwner)s{{/strong}} owns this site's connection to WordPress.com.",
+									{
+										args: { connectionOwner },
+										components: {
+											strong: <strong />,
+										},
+									}
+							  ) }
 					</FormSettingExplanation>
 				) }
 				{ userIsMaster && this.renderCurrentUserDropdown() }
@@ -274,6 +289,7 @@ export default connect(
 
 		return {
 			canManageOptions: canCurrentUser( state, siteId, 'manage_options' ),
+			connectionOwner: getJetpackConnectionOwner( state, siteId ),
 			currentUser: getCurrentUser( state ),
 			isCurrentPlanOwner,
 			isPaidPlan,
