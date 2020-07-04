@@ -34,7 +34,6 @@ import { FEATURE_BUSINESS_ONBOARDING } from 'lib/plans/constants';
 import './style.scss';
 
 /* eslint-disable wpcalypso/jsx-classname-namespace */
-
 /**
  * Module variables
  */
