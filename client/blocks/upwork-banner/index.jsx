@@ -109,6 +109,7 @@ class UpworkBanner extends PureComponent {
 	}
 }
 
+
 const mapStateToProps = ( state, ownProps ) => {
 	const siteId = getSelectedSiteId( state );
 	const currentPlan = getCurrentPlan( state, siteId );
