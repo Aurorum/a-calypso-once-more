@@ -1,7 +1,12 @@
 import { Dialog } from '@automattic/components';
 import { localize } from 'i18n-calypso';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
+import SiteRedirectStep from 'calypso/my-sites/domains/domain-search/site-redirect-step';
+import { getSelectedSite } from 'calypso/state/ui/selectors';
+import { getProductsList } from 'calypso/state/products-list/selectors';
+import QueryProductsList from 'calypso/components/data/query-products-list';
 import FormInputCheckbox from 'calypso/components/forms/form-checkbox';
 import FormLabel from 'calypso/components/forms/form-label';
 import Gridicon from 'calypso/components/gridicon';
@@ -80,6 +85,7 @@ class SiteAddressChangerConfirmationDialog extends PureComponent {
 				buttons={ buttons }
 				onClose={ this.onClose }
 			>
+				<QueryProductsList />
 				<TrackComponentView
 					eventName="calypso_siteaddresschange_areyousure_view"
 					eventProperties={ {
@@ -132,6 +138,7 @@ class SiteAddressChangerConfirmationDialog extends PureComponent {
 						) }
 					</p>
 				</div>
+				<SiteRedirectStep products={ this.props.productsList } selectedSite={ this.props.selectedSite } />
 				<h2>{ translate( 'Check the box to confirm' ) }</h2>
 				<FormLabel>
 					<FormInputCheckbox
@@ -149,4 +156,7 @@ class SiteAddressChangerConfirmationDialog extends PureComponent {
 	}
 }
 
-export default localize( SiteAddressChangerConfirmationDialog );
+export default connect( ( state ) => ( {
+	selectedSite: getSelectedSite( state ),
+	productsList: getProductsList( state ),
+} ) )( localize( SiteAddressChangerConfirmationDialog ) );
