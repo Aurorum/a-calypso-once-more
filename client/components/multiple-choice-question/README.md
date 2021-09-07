@@ -125,7 +125,7 @@ A translation-independent way to reference each answer. This is what will be pas
 
 ##### `answerText`
 
-- **Type:** `String`
+- **Type:** `String` or `Array`
 - **Required:** `yes`
 
 The text of the answer to display.

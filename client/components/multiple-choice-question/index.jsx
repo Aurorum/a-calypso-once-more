@@ -53,7 +53,7 @@ MultipleChoiceQuestion.propTypes = {
 	answers: PropTypes.arrayOf(
 		PropTypes.shape( {
 			id: PropTypes.string.isRequired,
-			answerText: PropTypes.string.isRequired,
+			answerText: PropTypes.oneOfType( [ PropTypes.string, PropTypes.array ] ).isRequired,
 			doNotShuffle: PropTypes.bool,
 			textInput: PropTypes.bool,
 			textInputPrompt: PropTypes.string,
