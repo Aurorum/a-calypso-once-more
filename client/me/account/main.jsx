@@ -887,7 +887,7 @@ class Account extends Component {
 
 				{ this.renderBlogActionFields() }
 
-				<FormSectionHeading>{ translate( 'Please Read Carefully' ) }</FormSectionHeading>
+				<FormSectionHeading>{ translate( 'Please read carefully' ) }</FormSectionHeading>
 
 				<p>
 					{ translate(
