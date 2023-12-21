@@ -4,7 +4,6 @@
  *
  * @package full-site-editing-plugin
  */
-
 /**
  * Checks if Global Styles should be limited on the given site.
  *
