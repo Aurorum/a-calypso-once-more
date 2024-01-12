@@ -8,7 +8,7 @@ import SiteIcon from 'calypso/blocks/site-icon';
 import AsyncLoad from 'calypso/components/async-load';
 import FormFieldset from 'calypso/components/forms/form-fieldset';
 import FormLabel from 'calypso/components/forms/form-label';
-import InfoPopover from 'calypso/components/info-popover';
+import SupportInfo from 'calypso/components/support-info';
 import { withUploadSiteIcon } from 'calypso/data/media/with-upload-site-icon';
 import accept from 'calypso/lib/accept';
 import EditorMediaModalDialog from 'calypso/post-editor/media-modal/dialog';
@@ -203,13 +203,15 @@ class SiteIconSetting extends Component {
 			<FormFieldset className="site-icon-setting">
 				<FormLabel className="site-icon-setting__heading">
 					{ translate( 'Site icon' ) }
-					<InfoPopover position="bottom right">
-						{ translate(
+					<SupportInfo
+						text={ translate(
 							'The Site Icon is used as a browser and app icon for your site.' +
 								' Icons must be square, and at least %s pixels wide and tall.',
 							{ args: [ 512 ] }
 						) }
-					</InfoPopover>
+						link="https://wordpress.com/support/site-icons/"
+						position="bottom right"
+					</SupportInfo>
 				</FormLabel>
 				{ createElement(
 					buttonProps.href ? 'a' : 'button',
