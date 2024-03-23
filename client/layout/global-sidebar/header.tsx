@@ -5,6 +5,7 @@ import { GLOBAL_SIDEBAR_EVENTS } from './events';
 import SidebarNotifications from './menu-items/notifications';
 import { SidebarSearch } from './menu-items/search';
 
+
 export const GlobalSidebarHeader = () => {
 	const translate = useTranslate();
 	return (
