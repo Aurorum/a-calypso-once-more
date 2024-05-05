@@ -22,7 +22,6 @@ import type { Moment } from 'moment';
 export type LogType = 'php' | 'web';
 
 const DEFAULT_PAGE_SIZE = 50;
-
 export function buildFilterParam(
 	logType: string,
 	severity: string,
