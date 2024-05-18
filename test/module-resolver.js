@@ -1,5 +1,4 @@
 const enhancedResolve = require( 'enhanced-resolve' );
-
 /**
  * Implements a custom resolver for Jest.
  *
