@@ -15,8 +15,10 @@ interface Props {
 	renderActions?: ( args: any ) => ReactElement;
 }
 
-export default function SitesList( { selectedSite, plugin, ...rest }: Props ) {
+export default function SitesList( { selectedSite, plugin, items, ...rest }: Props ) {
 	const dispatch = useDispatch();
+
+	const filteredItems = items.filter( ( item ) => item && ! item?.options?.is_domain_only );
 
 	const rowFormatter = ( { item, ...rest }: SiteRowFormatterArgs ) => {
 		const handleUpdatePlugin = () => {
@@ -37,6 +39,7 @@ export default function SitesList( { selectedSite, plugin, ...rest }: Props ) {
 		<PluginCommonList
 			{ ...rest }
 			selectedSite={ selectedSite }
+			items={ filteredItems }
 			rowFormatter={ rowFormatter }
 			primaryKey="ID"
 		/>
