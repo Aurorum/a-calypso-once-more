@@ -4,6 +4,7 @@ import { trackStatsAnalyticsEvent } from 'calypso/my-sites/stats/utils';
 
 import './styles.scss';
 
+
 interface EmptyStateActionProps {
 	text: string;
 	icon: JSX.Element;
