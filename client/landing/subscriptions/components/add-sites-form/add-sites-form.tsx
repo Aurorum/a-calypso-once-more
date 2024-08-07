@@ -108,6 +108,7 @@ const AddSitesForm = ( { onAddFinished }: AddSitesFormProps ) => {
 				onChange={ onTextFieldChange }
 				help={ isValidInput ? <Icon icon={ check } data-testid="check-icon" /> : undefined }
 				onBlur={ () => validateInputValue( inputValue, true ) }
+				autoFocus // eslint-disable-line jsx-a11y/no-autofocus
 			/>
 
 			{ inputFieldError ? <FormInputValidation isError text={ inputFieldError } /> : null }
