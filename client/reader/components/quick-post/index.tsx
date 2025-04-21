@@ -178,6 +178,7 @@ function QuickPost( {
 
 	const isDisabled = isSubmitting;
 
+	
 	return (
 		<div className="quick-post-input">
 			<div className="quick-post-input__fields">
